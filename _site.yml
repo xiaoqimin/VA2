@@ -1,5 +1,5 @@
-name: "VA2"
-title: "My Website"
+name: "VA"
+title: "Visual Analytics"
 description: |
   My Website
 output_dir: "_site"
@@ -9,4 +9,37 @@ navbar:
       href: index.html
     - text: "About"
       href: about.html
+  left:
+    - text: "Take-home Exercise"
+      menu:
+        - text: "Take-home Exercise 1"
+          href: "TH_Ex/Take_Home_Ex01/Take_Home_Ex01.html"
+        - text: "Take-home Exercise 2"
+          href: "TH_Ex/Take_Home_Ex02/take_home_ex_2.html"
+        - text: "Take-home Exercise 3"
+          href: "TH_Ex/Take_Home_Ex03/take_home_ex_03.html"
+    - text: "DataViz Makeover"
+      menu:
+        - text: "DataViz1"
+          href: "DataViz/DataViz1/dataviz_makeover_1.html"
+        - text: "DataViz2"
+          href: "DataViz/DataViz2/dataviz2.html"
+    - text: "In-Class Exercise"
+      menu:
+        - text: "In-Class Exercise 3"
+          href: "In-Class-Ex/In-class-ex-03/in_class_Ex_03.html"
+        - text: "In-Class Exercise 4"
+          href: "In-Class-Ex/In-class-ex-04/in_class_Ex_04.html"
+        - text: "In-Class Exercise 5.1"
+          href: "In-Class-Ex/in-class-ex-05/in-class-ex-05.html"
+        - text: "In-Class Exercise 5.2"
+          href: "In-Class-Ex/in-class-ex-0502/in-class-ex-05-02.html"
+        - text: "In-Class Exercise 6"
+          href: "In-Class-Ex/in-class-ex-06/in-class-ex-06.html"
+        - text: "In-Class Exercise 7"
+          href: "In-Class-Ex/in-class-ex-07/in-class-ex-07.html"
+        - text: "In-Class Exercise 8"
+          href: "In-Class-Ex/in-class-ex-08/in-class-ex-08.html"
+        - text: "In-Class Exercise 9"
+          href: "In-Class-Ex/in-class-ex-09/in-class-ex-09.html"
 output: distill::distill_article
