@@ -1,0 +1,223 @@
+---
+title: "Interactive data visualization for age-sex pyramid"
+description: |
+ Creating data visualisation beyond default
+author:
+  - name: Min Xiaoqi 
+    url: https://www.linkedin.com/in/xiaoqi-min/
+    affiliation: Master of IT in Business, Singapore Management University
+    affiliation_url: https://scis.smu.edu.sg/master-it-business/financial-technology-and-analytics-track
+date: "`r Sys.Date()`"
+output: distill::distill_article
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 1. The task 
+
+In this exercise, I will apply appropriate interactivity and animation methods to design an age-sex pyramid based data visualisation to show the changes of demographic structure of Singapore by age cohort and gender between 2000-2020 at planning area level.
+
+For this task, the data sets entitle *Singapore Residents by Planning Area / Subzone, Age Group, Sex and Type of Dwelling, June 2000-2010* and *Singapore Residents by Planning Area / Subzone, Age Group, Sex and Type of Dwelling, June 2011-2020* should be used. These data sets are available at [Department of Statistics](https://www.singstat.gov.sg/) home page.
+
+# 2. Data challenges 
+
+* There are 2 data sets with the same column variables, indicating Time, Age group, Sex, Type of dwelling, Planning area, Subzone, and Population. Hence, there is a need to firstly combine the two data sets into one data frame and then extract the columns that are useful for our data visualization, namely Age group, Sex, Time, Planning area. 
+
+* For plotting the age-sex pyramid as interactive graphs, we need 2 bar charts for male and female populations individually, then combine them into one visualization and reverse the male population chart so that the 2 bar charts can form a pyramid shape we desired. Hence, we will need to use filter or conditional formatting to separate the data by gender. 
+
+* Noticed from the raw data set, the names for age groups are not consistent in formatting: age group 0_to_4 and 5_to_9 are in single digits while the rest are in double digits. Hence, we need to standardize the starting number of digits, e.g. age group 0_to_4 should be 00_to_04 to ensure that the sorting of age groups will be correct. 
+
+# 3. Porposed sketch 
+![](C:/xiaoqimin/VA/TH_Ex/Take_Home_Ex02/sketch.jpg)
+
+# 4. Installing/loading required packages 
+The code chunk below is used to ensure that the required R packages are installed.
+
+```{r}
+packages = c('ggiraph', 'plotly', 'DT', 'patchwork', 'gganimate', 'tidyverse', 'readxl', 'gifski', 'gapminder')
+for (p in packages){
+  if(!require(p, character.only = T)){
+  }
+  library(p, character.only = T)
+}
+```
+
+# 5. Data import 
+In this task, *Singapore Residents by Planning Area / Subzone, Age Group, Sex and Type of Dwelling, June 2000-2010* and *Singapore Residents by Planning Area / Subzone, Age Group, Sex and Type of Dwelling, June 2011-2020*  data sets will be used which are csv files. The code chunk below imports the datasets into R environment by using [read_csv()](https://readr.tidyverse.org/reference/read_delim.html) function of **readr** package.
+
+```{r}
+set1 <- read_csv('data/respopagesextod2000to2010.csv')
+set2 <- read_csv('Data/respopagesextod2011to2020.csv')
+```
+
+# 6. Data visualization 
+
+Two visualizations will be created in this section. The animated age sex pyramid shows the overview of the demographic structure changes of Singapore by age and gender during 2000-2020. The Interactive age-sex pyramid gives a more in-depth visualization of the demographic structure by age, gender, time period at a planning area level.  
+
+## Animated Age-Sex pyramid  
+
+### Data wrangling
+
+#### Combining data sets 
+
+[rbind](https://www.rdocumentation.org/packages/SparkR/versions/3.1.2/topics/rbind) is used to combine the two data sets into one data frame since the second data set is continued from the first data set, all column variables are the same. 
+
+```{r}
+popdata <- rbind(set1, set2)
+```
+
+#### Compute population count 
+
+In this step, we create a new data frame "popdata_grouped" using [group_by()](https://dplyr.tidyverse.org/reference/group_by.html) of dplyr package. This is to group the population by its age, sex and time. Then [summarise()](https://dplyr.tidyverse.org/reference/summarise.html) of dplyr is used to create a column "population" to calculate the sum of population in this particular group. 
+
+```{r}
+popdata_grouped <- popdata %>%
+  group_by(`Time`,`AG`,`Sex`,) %>%
+  summarise(population = sum(Pop))%>%
+  ungroup()
+```
+
+#### Sorting data
+Since we would like the population pyramid to be in a descending order with older age at the top of the pyramid, we will use [arrange()](https://dplyr.tidyverse.org/reference/arrange.html) of dplyr package to sort the population in descending order of age, as shown in the code chunk below.
+
+```{r}
+popdata_sorted <- popdata_grouped %>%
+  arrange(desc(AG))
+```
+
+After sorting, we noticed that the two rows corresponding to age group "5_to_9" is not in front of the rows corresponding to age group "0_to_4" due to formatting of the field. Hence, we need to standardize the format of the "AG" field by changing both "5_to_9" and "0_to_4“ to "05_to_09" and "00_to_04” as shown in the following code chunk: 
+
+```{r}
+popdata_sorted$AG[popdata_sorted$AG == "0_to_4"] <- "00_to_04"
+popdata_sorted$AG[popdata_sorted$AG == "5_to_9"] <- "05_to_09"
+```
+
+As we can see from the "population" column, the sum of population are mostly 5-6 digits which may not be presentable when we plot the graph and show the axis labels. Hence,[mutate()](https://dplyr.tidyverse.org/reference/mutate.html) of dplyr package is used to create a new column "popinthousands" to convert the sum of population in to population in thousands, as shown below. 
+
+```{r}
+popdata_final <- popdata_sorted %>%
+  mutate(popinthousands = population/1000)
+```
+
+### Data visualization 
+
+In order to have both Males and Females data in the same plot, we use [ifelse](https://www.datamentor.io/r-programming/ifelse-function/) function to set the logical statement. That is, if "Sex" is "Males", we compute the population count into a negative value since we would like Males portion on the left of the plot. If "Sex" is "Females", it will be shown on the positive portion of the axis. 
+
+*geom_col()* was used to plot the chart since population pyramids are in bars representing different age groups.
+
+*scale_x_continuous()* is used to rescale the x axis, mainly to set the axis number marks in the range that we desire, stating the minimun and maximum as well as the stepsize.
+
+Other functions such as theme and scale_fill_manual are used to customize the display and apprearance of the chart. 
+
+[transition_time()](https://www.rdocumentation.org/packages/gganimate/versions/1.0.7/topics/transition_time) is used for the plot to display the different states representing the specific time period. 
+
+```{r}
+ggplot(data=popdata_final, 
+       aes(x = ifelse(test = Sex == 'Males', 
+                      yes = -popinthousands, 
+                      no = popinthousands),
+                           y = AG, fill = Sex))+
+  geom_col()+
+  scale_x_continuous(breaks=seq(-160,160,20),labels = abs(seq(-160,160,20)))+
+  labs(title = 'Age-Sex Pyramid in Year: {frame_time}',
+       x = "Population Count (in thousands)",
+       y = "Age Group")+
+  theme_bw()+
+  theme(plot.title = element_text(face = 'bold', size = 14))+
+  scale_fill_manual(values = c('Males' = 'steelblue2', 'Females' = 'plum2'))+
+  transition_time(as.integer(Time))+
+  ease_aes('linear')
+```
+
+## Interactive Age-Sex pyramid
+
+### Data Wrangling
+
+#### Compute population count 
+
+In this step, we create a new data frame "popdata_grouped2" using [group_by()](https://dplyr.tidyverse.org/reference/group_by.html) of dplyr package. This is to group the population by its planning area, age, sex and time. Then [summarise()](https://dplyr.tidyverse.org/reference/summarise.html) of dplyr is used to create a column "population" to calculate the sum of population in this particular group. 
+
+```{r}
+popdata_grouped2 <- popdata %>%
+  group_by(`PA`,`Time`,`AG`,`Sex`,) %>%
+  summarise(population = sum(Pop))%>%
+  ungroup()
+```
+#### Sorting data
+Since we would like the population pyramid to be in a descending order with older age at the top of the pyramid, we will use [arrange()](https://dplyr.tidyverse.org/reference/arrange.html) of dplyr package to sort the population in descending order of age, as shown in the code chunk below.
+
+```{r}
+popdata_sorted2 <- popdata_grouped2 %>%
+  arrange(desc(AG))
+```
+
+After sorting, we noticed that the two rows corresponding to age group "5_to_9" is not in front of the rows corresponding to age group "0_to_4" due to formatting of the field. Hence, we need to standardize the format of the "AG" field by changing both "5_to_9" and "0_to_4“ to "05_to_09" and "00_to_04” as shown in the following code chunk: 
+
+```{r}
+popdata_sorted2$AG[popdata_sorted2$AG == "0_to_4"] <- "00_to_04"
+popdata_sorted2$AG[popdata_sorted2$AG == "5_to_9"] <- "05_to_09"
+```
+
+As we can see from the "population" column, the sum of population are mostly 5-6 digits which may not be presentable when we plot the graph and show the axis labels. Hence,[mutate()](https://dplyr.tidyverse.org/reference/mutate.html) of dplyr package is used to create a new column "popinthousands" to convert the sum of population in to population in thousands, as shown below. 
+
+```{r}
+popdata_final2 <- popdata_sorted2 %>%
+  mutate(popinthousands = population/1000)
+```
+
+#### creating data frames for male and female individually 
+
+In order to have male and female populatoins displayed side by side, we will first create two data frames for male and female individually. This is done by the [filter](https://www.rdocumentation.org/packages/dplyr/versions/0.7.8/topics/filter) function. 
+
+```{r}
+male <- popdata_final2 %>%
+  filter(Sex == "Males")
+
+female <- popdata_final2 %>%
+  filter(Sex == "Females")
+```
+
+### Data visualization 
+
+For this data visualization, we will use **plot_ly** to create 2 graphs for both male and female population, the x axis will be the population in thousands we computed earlier, the y aixs is the age groups, we will define planning area as different colors of the bars that can be filtered later on, and setting the years as the frame. Also, a tooltip is created to include the Year, Planning area, Age group, Sex and Population for a clearer view when the use hover to a specific bar. [autorange](https://plotly.com/r/axes/#reversed-axes) function is used in the plot for male population to reverse the axis so that it can be displayed on the negative scale. Lastly, *subplot()* is used to put the two plots side by side with shared x and y axes. 
+
+```{r}
+p1 <- plot_ly(data = male, 
+              x = ~popinthousands,
+              y = ~AG, 
+              color = ~PA,
+              colors = "Set1",
+              frame = ~Time,
+              text = ~paste("Year:", Time,
+                            "<br>Planning Area:", PA,
+                            "<br>Age Group:", AG,
+                            "<br>Sex:", Sex,
+                            "<br>Population(thousands):", popinthousands)) %>%
+        layout(xaxis = list(title = list(text = 'Male', standoff =25), autorange = 'reversed'), 
+               yaxis = list(title = list(text = 'Age Group', standoff =25)))
+
+p2 <- plot_ly(data = female, x = ~popinthousands,
+              y = ~AG, 
+              color = ~PA,
+              colors = "Set1",
+              frame = ~Time,
+              text = ~paste("Year:", Time,
+                            "<br>Planning Area:", PA,
+                            "<br>Age Group:", AG,
+                            "<br>Sex:", Sex,
+                            "<br>Population(thousands):", popinthousands)) %>%
+        layout(xaxis = list(title = list(text = 'Female', standoff =25)),
+               yaxis = list(title = list(text = 'Male', standoff =25)))
+subplot (p1,p2, shareX = TRUE, shareY = TRUE)
+```
+
+# 7. Conclusion 
+
+By looking at the animated age-sex pyramid, we can see that there was a significant shrink in the young (aged under 19) population over the years, while a significant boost in the senior (aged between 50-80) population, which infers a aging population problem in Singapore. From the interactive pyramid, planning areas such as Punggol saw a boost in the population especially in the young-middle age band. 
+
+Interactive data visualization provides users a customized way of exploring the data and the charts, this also enhances the understanding of the message behind the data available for the user. It allows users to freely navigate through the visualization and gain in-depth information from the plots. 
+
+
+

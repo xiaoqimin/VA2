@@ -1,0 +1,238 @@
+---
+title: "Data visualization for Starbucks kids drinks nutritional facts"
+description: |
+ Putting Visual Analytics into Practical Use
+author:
+  - name: Min Xiaoqi 
+    url: https://www.linkedin.com/in/xiaoqi-min/
+    affiliation: Master of IT in Business, Singapore Management University
+    affiliation_url: https://scis.smu.edu.sg/master-it-business/financial-technology-and-analytics-track
+date: "`r Sys.Date()`"
+output: distill::distill_article
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 1. The task
+
+In this take-home exercise, I will apply appropriate data visualization techniques to create a data visualization to segment kid drinks and other by nutrition indicators. For the purpose of this task, starbucks_drink.csv will be used.
+
+# 2. Data challenges 
+
+* Given the large data set, the challenge of this task is to present insightful information by segmenting "kids and other drinks" by nutrition indicators, show if there is any correlation between the nutrition or if certain nutrition indicators are overly present in a drink type. 
+
+* By examine the data set, it is noticed that there are blanks in the "milk" and "whipped cream" columns for "steamed apple juice" drink type, to standardize the entries with other rows, we will need to enter values in these cells, i.e. "no milk" for blanks in "milk" column, and "no whipped cream" for blanks in "whipped cream" column. 
+
+* In the data set, different drinks are offered in varying portion sizes ranging from 8 to 24 oz. Since our goal is to analyse the nutrition indicators in each drink, we will need to take the average of the nutrition indicators by combining similar drinks and divide them by the total portion to achieve consistency and accuracy. 
+
+* Data field "Cholesterol(mg)" is in character data type, which should be corrected to numeric values for further calculation. 
+
+* "Milk" and "Whipped Cream" are options to add on to the drinks, which may also contribute to nutrition indicators such as fat, sugar, protein and calories. Hence, we will need to take these data fields into analysis by grouping them under drink type, so that we can have detailed understanding about the relationships between milk/whipped cream on nutrition indicators for different drinks type. 
+
+# 3. Proposed visualization  
+
+As mentioned in the challenges section, there are 2 goals we want to achieve through data visualization. We will use a correlation plot to understand the relationships between the different nutrition indicators, and use a heatmap to understand the amount of nutrition in each of the drinks type, to see if a certain drink contain significant amount of specific nutrition such as caffeine or sugars. 
+
+# 4. Installing/loading required packages 
+
+For this task, we will be installing and launching **seriation**, **dendextend**, **heatmaply**, **tidyverse** and **corrplot**. 
+
+```{r}
+packages = c('seriation', 'dendextend', 'heatmaply', 'tidyverse', 'corrplot','readr','dplyr')
+
+for(p in packages){library
+  if(!require(p, character.only = T)){
+    install.packages(p)
+  }
+  library(p, character.only = T)
+}
+```
+
+# 5. Data import and wrangling 
+
+## 5.1 Data import 
+
+We will first import the data set "starbuck_drinks.csv". Since it is in csv format, we will use *read_csv()* to load it. 
+
+```{r}
+sb <- read_csv("data/starbucks_drink.csv")
+```
+
+## 5.2 Data wrangling 
+
+For this task, only the "kids drinks and other" category from the data set will be used. Hence, *filter()* function is used to extract relevant rows. 
+
+```{r}
+sb_kids <- sb %>%
+  filter(Category == "kids-drinks-and-other")
+```
+
+By examine the filtered data set, we see that for "steamed apple juice", the options for "Milk" and "Whipped Cream" are not applicable, indicated by blanks. Hence, we need to change all the blank cells to "NA" first, as shown in the following code chunk. 
+
+```{r}
+sb_kids[is.na(sb_kids)] <- "NA"
+```
+
+Then, we will change the NA rows under "Milk" to "No Milk", and NA rows under "Whipped Cream" to "No Whipped Cream". 
+
+```{r}
+sb_kids$Milk[sb_kids$Milk == "NA"] <- "No Milk"
+sb_kids$`Whipped Cream`[sb_kids$`Whipped Cream` == "NA"] <- "No Whipped Cream"
+```
+
+Next, we will concatenate the drink types with milk and whipped cream choices using the *unite* function.
+
+```{r}
+sb_kids_unite <- sb_kids %>%
+  unite(Drink, c("Name", "Milk","Whipped Cream"))
+```
+
+As mentioned in the data set challenges, "Caffeine(mg)" is not in the correct data type, hence we will change the data type of caffeine from char to numeric as shown below. 
+
+```{r}
+sb_kids_unite$`Caffeine(mg)` = as.numeric(as.character(sb_kids_unite$`Caffeine(mg)`))
+```
+
+
+Finally, we will group the drinks types together and calculate the average nutrition in each drink by dividing the total nutrition by the sum of portion(oz).This is to ensure that our result is not biased by the portions, i.e. large portion of a drink type may have more calories and sugars. 
+
+```{r}
+sb_kids_grouped <- sb_kids_unite %>%
+  group_by(`Drink`) %>%
+  summarise('Calories' = sum(`Calories`)/sum(`Portion(fl oz)`),
+           'Calories from fat'  = sum(`Calories from fat`)/sum(`Portion(fl oz)`),
+           'Total Fat(g)' = sum(`Total Fat(g)`)/sum(`Portion(fl oz)`),
+           'Saturated fat(g)' = sum(`Saturated fat(g)`)/sum(`Portion(fl oz)`),
+           'Trans fat(g)' = sum(`Trans fat(g)`)/sum(`Portion(fl oz)`),
+           'Cholesterol(mg)' = sum(`Cholesterol(mg)`)/sum(`Portion(fl oz)`),
+           'Sodium(mg)' = sum(`Sodium(mg)`)/sum(`Portion(fl oz)`),
+           'Total Carbohydrate(g)' = sum(`Total Carbohydrate(g)`)/sum(`Portion(fl oz)`),
+           'Dietary Fiber(g)' = sum(`Dietary Fiber(g)`)/sum(`Portion(fl oz)`),
+           'Sugars(g)' = sum(`Sugars(g)`)/sum(`Portion(fl oz)`),
+           'Protein(g)' = sum(`Protein(g)`)/sum(`Portion(fl oz)`),
+           'Caffeine(mg)' = sum(`Caffeine(mg)`)/sum(`Portion(fl oz)`)) %>%
+  ungroup()
+```
+
+# 6. Data visualization 
+
+## 6.1 Coorplot 
+
+Firstly, we need to compute the correlation matrix of the data frame using [cor()](https://www.rdocumentation.org/packages/stats/versions/3.6.0/topics/cor) of R Stats. 
+
+```{r}
+sb_kids_grouped.cor <- cor(sb_kids_grouped[,2:13])
+```
+
+Next, [corrplot()](https://www.rdocumentation.org/packages/corrplot/versions/0.2-0/topics/corrplot) is used to plot the corrgram, visual geometrics and layout settings are included to finalize the visualization:
+
+* Use *type* to display only the matrix in the lower part of the chart. 
+
+* Use *addCoef.col* to display the correlation coefficients in black.
+
+* Use *method* to make the shape of the attribute values to ellipse.
+
+* Arguments *diag* and *tl.col* are used to turn off the diagonal cells and to change the axis text label color to black color respectively.
+
+* Use *col* to change the color palette,  we can get sequential and diverging colors from *COL1()* and *COL2()*. The color palettes are borrowed from *RColorBrewer* package.
+
+```{r fig.height=8, fig.width=8}
+corrplot(sb_kids_grouped.cor,
+         type = "lower",
+         addCoef.col = "black",
+         method = "ellipse",
+         diag = FALSE,
+         tl.col = "black",
+         tl.cex = 1,
+         number.cex = 0.8,
+         col = COL2('RdYlBu'))
+```
+
+## 6.1 Heatmap
+
+Firstly, we need to change the rows by country name instead of row number by using the code chunk below
+
+```{r}
+row.names(sb_kids_grouped) <- sb_kids_grouped$Drink
+```
+
+The data was loaded into a data frame, but it has to be a data matrix to make the heatmap.
+
+The code chunk below will be used to transform the data frame into a data matrix.
+
+```{r}
+sb_kids_matrix<- data.matrix(sb_kids_grouped)
+```
+
+In order to determine the best clustering method and number of cluster the *dend_expend()* and *find_k()* functions of **dendextend** package will be used.
+
+First, the *dend_expend()* will be used to determine the recommended clustering method to be used.
+
+```{r}
+sb_kids_matrix_d <- dist(normalize(sb_kids_matrix[, -c(1)]), 
+                         method = "euclidean")
+dend_expend(sb_kids_matrix_d)[[3]]
+```
+The output table shows that “average” method should be used because it gave the high optimum value.
+
+Next, *find_k()* is used to determine the optimal number of clusters.
+
+```{r}
+sb_kids_matrix_clust <- hclust(sb_kids_matrix_d,
+                               method = "average")
+num_k <- find_k(sb_kids_matrix_clust)
+plot(num_k)
+```
+Figure above shows that k=10 would be good.
+
+With reference to the statistical analysis results, we can prepare the code chunk as shown below.
+
+* *normalize* method is used to bring data to the 0 to 1 scale by subtracting the minimum and dividing by the maximum of all observations
+
+* *seriate* is “none” gives us the dendrograms without any rotation that is based on the data matrix.
+
+* Layout and visual formatting are used, such as changing the color scheme, adjusting the margins and font sizes, and adding labels and titles to the charts.  
+
+```{r, layout="l-page", fig.width=7, fig.height=9, fig.align='center', cache=TRUE}
+heatmaply(normalize(sb_kids_matrix[,-c(1)]),
+          dist_method = "euclidean",
+          hclust_method = "average",
+          seriate = "none",
+          k_row = 10,
+          colors = Purples,
+          margins = c(NA,70,60,NA),
+          fontsize_row = 7,
+          fontsize_col = 8,
+          xlab = "Nutrition Indicators",
+          ylab = "Drink type by milk and whipped cream",
+          main="Starbucks(kids and other drinks) nutrition indicator by milk and whipped cream types \nDataTransformation using Normalise Method",
+          Colv = NA
+          )
+```
+
+# 7. Conclusion 
+
+From the correlation plot, we see that most of the nutrition indicators are positively correlated with each other. Some of them have strong positive correlations, such as between "Total Fat" and "Calories from fat", "Saturated fat" with "Calories from fat" and "Total Fat", "Sugars" with "Calories" "Sodium" and "Total Carbohydrate", and interestingly "Caffeine" is highly positively correlated with "Dietary Fiber". 
+
+From the heatmap, we can see that "Salted Caramel Hot Chocolate" with whipped cream and milk added is less recommended as it has high calories, total fat, cholesterol and sugars. Different types of milk options also contribute to the varying nutrition indicators. This drink type is less recommended to consume, potentially leading to diabetes, overweight and high cholesterol. 
+
+Moreover, drinks with whipped cream and milk add-ons (except nonfat milk) tend to have higher calories from fat. Interestingly, drinks with coconut milk added tend to have significantly high level of saturated fat among the other types of milk. 
+
+Drinks with coconut and almond have less protein levels as compared to drinks with other types of milk and soy. This can be recommended for kids choices as it helps with their growth. 
+
+Hot chocolate drinks and Vanilla Creme drinks are with significant caffeine levels as compared to other drinks, regardless of whipped cream and milk type. According to the [United States Department of Agriculture](https://www.healthline.com/health/does-chocolate-have-caffeine#The-darker-the-chocolate,-the-higher-the-caffeine-content), the darker the chocolate, the more amount of caffeine it contains per ounce. These drinks can be reduced for kids to consume extensively. 
+
+Overall, for the kids and other drinks segment, drinks with whipped cream and coconut are less recommended as they contain high level of fat and cholesterol. Steamed apple juice is more recommended for kids as it is more natural and healthy. 
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,206 @@
+---
+title: "Data Visualisation using ggplot2"
+description: |
+  In this exercise, I will be using ggplot2 in R package to create data visualisations for two datasets. One showing a pareto chart of the distribution of returns by product sub-category in a superstore, the other one showing a age-sex pyramid of the demographic structure of Singapore.
+author:
+  - name: Min Xiaoqi 
+    url: https://www.linkedin.com/in/xiaoqi-min/
+    affiliation: Master of IT in Business, Singapore Management University
+    affiliation_url: https://scis.smu.edu.sg/master-it-business/financial-technology-and-analytics-track
+date: "`r Sys.Date()`"
+output: distill::distill_article
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# 1.Pareto chart 
+
+## Overview
+Pareto chart is a popular data visualization that consists of a bar chart and line graph that reflects the [Pareto principle or commonly referred to as 80/20 Rule](https://en.wikipedia.org/wiki/Pareto_principle). 
+
+![](C:/xiaoqimin/VA/TH_Ex/Take_Home_Ex01/pareto.png)
+
+* **Description of Pareto chart:** In this dual axis chart, the left vertical axis (primary y-axis) shows the absolute frequency of the occurrences and their values are presented as bars. The bars are presented in a descending order. The right vertical axis (secondary y-axis) shows the cumulative percentage of the total number of occurrences and they are presented as dots joined by a smooth line. 
+
+* **Purpose of Pareto chart:** It aims to highlight the most important factors among a set of other factors. In market share studies, Pareto charts can be applied to reveal if the business is dominated by a handful of key products or customers. In general, businesses will try to avoid their businesses over-dependent by a few products or customers because if something happen to their key products or business partners, the businesses will be severely affected.
+
+* **The task:** In this task, a data set from a retail store group will be used to create a Pareto chart showing the distribution of returns by product sub-category. Hence we will be able to determine if the returns by the customers are dominated by a few product categories. 
+
+## Getting started
+
+### Installing and loading required libraries
+Before we get started, it is important to ensure that the required R packages have been installed. For the purpose of the exercise, the follow tidyverse packages will be used:
+
+* [reaxl](https://readxl.tidyverse.org/) package will be used to read and parse a worksheet into R as a tibble data frame format. (It is important to note that the R object is in tibble data frame and not the generic data frame).
+
+* [dplyr](https://dplyr.tidyverse.org/) package will be used to perform data transformation and data wrangling tasks
+
+* [ggplot2](https://ggplot2.tidyverse.org/) package will be used to building the pareto chart by using the principle of [Layered Grammar of Graphs.](https://vita.had.co.nz/papers/layered-grammar.html)
+
+The code chunk below is used to ensure that the required R packages are installed. 
+
+```{r}
+packages = c('tidyverse','readxl','knitr')
+
+for(p in packages){
+  if(!require(p,character.only = T)){
+    install.packages(p)
+  }
+  library(p, character.only = T)
+}
+```
+
+## Data import
+In this task, *Superstore-2021.xls* data set will be used which is a Microsoft Excel workbook that consists of 3 worksheets, namely: Orders, People and Returns.
+
+The code chunk below imports *Superstore-2021.xls* into R environment by using [read_csv()](https://readr.tidyverse.org/reference/read_delim.html) function of **readr** package.
+
+```{r}
+orders <- read_xls("data/Superstore-2021.xls",
+                   sheet = "Orders")
+returns <- read_xls("data/Superstore-2021.xls",
+                    sheet = "Returns")
+```
+
+## Data wrangling
+### Joining two data frames
+In this step, the [left_join()](https://dplyr.tidyverse.org/reference/mutate-joins.html) of **dplyr** is used to join the returns data frame and orders data frame by using Order ID as the unique identifier.
+
+```{r}
+joined_tab <- left_join(returns, orders,
+                        by = c('Order ID' = 'Order ID'))
+```
+
+### Compute the frequency count by Sub-Category
+Next, we are going to compute the frequency count of returns by sub-category. In the code chunk below, [group_by()](https://dplyr.tidyverse.org/reference/group_by.html) of dplyr package is used to group the orders by Sub-Category. Then, [summarise()](https://dplyr.tidyverse.org/reference/summarise.html) of dplyr is used to count (i.e. [n()](https://dplyr.tidyverse.org/reference/context.html)) the number of returned orders.
+
+```{r}
+freq_returned <- joined_tab %>%
+  group_by(`Sub-Category`) %>%
+  summarise(Returns = n()) %>%
+  ungroup()
+```
+
+### Sorting data
+By default, the values of the tibble data frame is sorted according to the values of the first column. In this case, the values are sorted alphabetically by Sub-Category field. Hence, we need to sort the values in the sub-category field by the values in the Returns field. The [arrange()](https://dplyr.tidyverse.org/reference/arrange.html) of dplyr package is used as shown in the code chunk below.
+
+```{r}
+freq_sorted <- freq_returned %>%
+  arrange(desc(Returns))
+```
+
+### Computing the cumulative frequency 
+Last step before we dive into data visualization, we need to compute the cumulative frequency of returns by product sub-category. This task will be performed by using [mutate()](https://dplyr.tidyverse.org/reference/mutate.html) of dplyr package and [cumsum()](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/cumsum) of Base R.
+
+```{r}
+freq_cum <- freq_sorted %>%
+  mutate(cumfreq = cumsum(Returns))
+```
+
+## Data visualization 
+After data preparation, we will be plotting the Pareto chart in this section using [ggplot](https://ggplot2.tidyverse.org/index.html) and its various elements, namely   [geom_bar()](https://ggplot2.tidyverse.org/reference/geom_bar.html),  [geom_line()](https://plotly.com/ggplot2/geom_line) ,  [geom_point()](https://ggplot2.tidyverse.org/reference/geom_point.html),  [geom_hline()](https://ggplot2.tidyverse.org/reference/geom_abline.html) as shown in the code chunk below. 
+
+Firstly, *ggplot()* was used to plot the basic graph specifying the data set and axes. 
+
+Then, *geom_bar()* was used to create the descending bar chart of the frequency of the returns by sub-category. *geom_bar()* makes the height of the bar proportional to the number of cases in each group. *geom_col()* is used when you want the heights of the bars to represent values in the data. In our case, geom_bar is used and we are setting the stat='identity' which gives the same result as *geom_col()*.
+
+*geom_point()* and *geom_line()* were used together to plot the points representing the values of cumulative frequencies at a specific sub-category and subsequently connecting them to a smooth line. 
+
+To add a second axis(right vertical axis) to show the percentage cumulative frequency, we use [scale_y_continuous()](https://ggplot2.tidyverse.org/reference/scale_continuous.html) and [sec.axis()](https://ggplot2.tidyverse.org/reference/sec_axis.html) to indicate the labels and ticks. *sec.axis()* helps us to position the second axis opposite of the primary axis and it is based on a transformation of the primary axis by dividing the total frequency. 
+
+Lastly, [geom_hline()](https://ggplot2.tidyverse.org/reference/geom_abline.html) was added as a reference line to the Pareto chart to indicate the 80% mark, it shows us that the returned products are not dominated by a handful of key sub-category products. Labels and theme were added to the chart to make it more presentable to the users. 
+
+```{r}
+ggplot(freq_cum, aes(x = reorder(`Sub-Category`, -Returns), y = Returns)) +
+  geom_bar(stat='identity', fill = 'lightblue')+
+  geom_point(aes(y = cumfreq))+
+  geom_line(aes( y = cumfreq, group = 1)) +
+  scale_y_continuous(sec.axis = sec_axis(~./3226, name = 'Cumulative Frequency(%)', labels = scales::percent, breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1)))+
+  geom_hline(aes(yintercept = 3226*0.8), color = 'orange', linetype = 'dashed', size = .5)+
+  theme(axis.text.x =element_text(angle = 90))+
+  labs(title = "Pareto Chart of returns by sub-category", x = "Sub-Category", y = "Absolute Frequency")
+```
+
+```{r, echo=FALSE}
+ggsave(filename = "pareto.png",width = 10, height = 7 )
+```
+
+# 2.Age-sex pyramid 
+
+## Overview
+A population pyramid (Age-Sex pyramid) is a graph that shows the distribution of a country's population by age groups and sex. 
+
+* **Description of Population pyramid:** Population pyramid is illustrated in a shape of pyramid with two axes. The horizontal x-axis shows the population counts in either absolute numbers or as a percentage of the total population. The vertical y-axis shows the age groups of the population. Usually the male population is shown on the left and female population on the right. 
+
+* **Purpose of Population pyramid:** Population pyramid can be used to compare the differences between male and female populations of a region or country. It gives valuable information for population planners, market researchers,, product developers and so on. Applicable areas include population control, resource planning and infrastructure developments. 
+
+* **The task:** For this task,we will be visualizing the demographic structure of Singapore by age, cohort and gender in June 2021. The data entitled *Singapore Residents by Planning Area / Subzone, Age Group, Sex and Type of Dwelling, June 2021* is used. The data set is available at [Department of Statistics](https://www.singstat.gov.sg/) home page. 
+
+## Data import
+In this exercise, we will firstly import the data set which is in csv format, using the [read_csv](https://www.rdocumentation.org/packages/qtl2/versions/0.24/topics/read_csv) function. 
+
+```{r}
+population <- read_csv("Data/respopagesextod2021.csv")
+```
+
+It is noted that both *read_csv* and *read.csv* can be used for data import, however, *read_csv* is preferred because it imports data as a tibble which uses a consistent naming scheme for the parameters, leave strings as is by default and automatically parse common date/time formats.
+
+## Data wrangling 
+In this step, we create a new data frame "population_grouped" using [group_by()](https://dplyr.tidyverse.org/reference/group_by.html) of dplyr package. This is to group the population by its age and sex. Then [summarise()](https://dplyr.tidyverse.org/reference/summarise.html) of dplyr is used to create a column "popsum" to calculate the sum of population in this particular age and sex group. 
+
+```{r}
+population_grouped <- population %>%
+  group_by(`AG`, `Sex`) %>%
+  summarise(popsum = sum(Pop)) 
+```
+
+## Sorting data
+Since we would like the population pyramid to be in a descending order with older age at the top of the pyramid, we will use [arrange()](https://dplyr.tidyverse.org/reference/arrange.html) of dplyr package to sort the population in descending order of age, as shown in the code chunk below.
+
+```{r}
+population_sorted <- population_grouped %>%
+  arrange(desc(AG))
+```
+
+After sorting, we noticed that the two rows corresponding to age group "5_to_9" is not in front of the rows corresponding to age group "0_to_4" due to formatting of the field. Hence, we need to standardize the format of the "AG" field by changing both "5_to_9" and "0_to_4“ to "05_to_09" and "00_to_04” as shown in the following code chunk: 
+
+```{r}
+population_sorted[19:20,1] <- "05_to_09"
+population_sorted[37:38,1] <- "00_to_04"
+```
+
+As we can see from the "popsum" column, the sum of population are mostly 5-6 digits which may not be presentable when we plot the graph and show the axis labels. Hence,[mutate()](https://dplyr.tidyverse.org/reference/mutate.html) of dplyr package is used to create a new column "popinthousands" to convert the sum of population in to population in thousands, as shown below. 
+
+```{r}
+popfinal <- population_sorted %>%
+  mutate(popinthousands = popsum/1000)
+```
+
+## Data visualization
+Now, we are ready to plot the population pyramid using [ggplot](https://ggplot2.tidyverse.org/index.html). 
+
+In order to have both Males and Females data in the same plot, we use [ifelse](https://www.datamentor.io/r-programming/ifelse-function/) function to set the logical statement. That is, if "Sex" is "Males", we compute the population count into a negative value since we would like Males portion on the left of the plot. If "Sex" is "Females", it will be shown on the positive portion of the axis. 
+
+*geom_bar* was used to plot the chart since population pyramids are in bars representing different age groups. Next, [scale_y_continuous()](https://ggplot2.tidyverse.org/reference/scale_continuous.html) is used to rescale the y axis, mainly to set the axis number marks in the range that we desire. Lastly, we use [coord_flip](https://www.rdocumentation.org/packages/ggplot2/versions/1.0.0/topics/coord_flip) to flip the x and y axes, and add the labels and theme to complete the population pyramid chart. 
+
+```{r}
+ggplot(data = popfinal, aes(x = AG, fill = Sex,
+                 y = ifelse(test =Sex == "Males",
+                            yes = -popinthousands, no = popinthousands))) +   geom_bar(stat = "identity") +
+  scale_y_continuous(labels = abs, breaks = c( -150, -100, -50, 0, 50,100,150)) +
+  coord_flip() +
+  labs(title = 'Age-Sex Pyramid: Demographic Structure of Singapore 2021', y = 'Population count (in thousands)', x = 'Age Group') +
+  theme(plot.title = element_text(size = 10))
+```
+# Benefit of preparing the data visualisation programmatically
+
+* Data preparation is key 
+  + As compared to interactive designing tools such as Tableau which is more focused on data visualization, preparing it programmatically allows us to manipulate and wrangle data in the same platform as data visualization. It is not just about plotting and beautifying the graphs, the data preparation behind the graphs are more important as we want to show meaningful and accurate information. Tools such as R has a powerful statistical and data analysis packages that allow users to analyse the data, which is key before we convert it visually. 
+
+* Reproducibility and tractability 
+  + It is especially useful when doing scientific research with R as you can simply reproduce the scripts and make necessary changes to some parts without starting from scratch. It is easy to try different ideas and thoughts and maintain a record, fast way of correcting errors and updating the analysis afterwards. Moreover, the same plot can be used by different variables which makes it easier since the same codes can be reused. 
+
+* Advanced visualizations and customization 
+  + Preparing data visualization programmatically in R gives us more options for creativity in our visualizations as we can customize the illustration in almost anyway we want, such as themes, label positions, text sizes etc. It provides more convenience and allows us to create vast types of graphs with simple codes. 
