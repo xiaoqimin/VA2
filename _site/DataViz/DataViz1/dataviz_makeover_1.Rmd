@@ -1,0 +1,170 @@
+---
+title: "DataViz Makeover 1"
+description: |
+  In this article, Singapore's Labor Force Participation Rate data will be used while applying the fundamentals of Visual Analytics using Tableau. This includes critiques about the origianal visualisation and propose an alternative to address the flaws.
+author:
+  - name: Min Xiaoqi 
+    url: https://www.linkedin.com/in/xiaoqi-min/
+    affiliation: Master of IT in Business, Singapore Management University
+    affiliation_url: https://scis.smu.edu.sg/master-it-business/financial-technology-and-analytics-track
+date: "`r Sys.Date()`"
+output: distill::distill_article
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+```
+
+# 1. Original visualization 
+![](C:/xiaoqimin/VA/DataViz/DataViz1/original.png)
+The data visualisation above is created by using data provided by Ministrty of Manpower, Singapore (MOM). The data are available under the page entitle [Statistical Table](https://stats.mom.gov.sg/Pages/LabourForceTimeSeries.aspx): Labor Force. For the purpose of this Dataviz Makeover, we will use the data on *Resident Labour Force Participation Rate by Age and Sex.*
+
+# 2. Critique of original visualization 
+
+## 2.1 Clarity 
+
+* The title of the chart is not clear to the readers. It only states the chart is about labor force participation rate, but the readers are unable to understand the detailed information that the graph is trying to convey. Information such as country, year and what is this chart's purpose. 
+
+* The y-axis of the chart is labeled as "Lfpr" only. There is no indicator of what this short form stands for. Although we can infer from the title that "Lfpr" might refer to "Labor Force Participation Rate", it is important to state it clearly to avoid misunderstanding. Moreover, there is no unit for the y-axis, readers are unable to interpret how the rate is measured as well. 
+
+* The "Age Group" scale on the top x-axis and the legend on the right are not sorted to an ascending or descending order. Instead, the density chart is illustrated in ascending order, creating an illusion for the reader that the rate is increasing when the age group decreases. Moreover, the age gropus includes age group "70 & over" and "75 and over". This duplication of data should be eliminated at the data cleaning stage. 
+
+* The bottom x-axis showing years are not displayed properly. It is labelled as year, and every column is 2015. The readers cannot understand whether this chart is only for 2015, and whether each column is monthly or daily data in a year. The unit of the measurement is important and the granularity of the data presented should be clear to the reader. 
+
+* The data source is not recognized in the chart, inhibiting the reliability of the data visualization. 
+
+* There is a lack of derived insights and information that the chart would like to convey to the reader. 
+
+## 2.2 Aesthetics
+
+* There is duplicated coloring and labeling for age groups. Age groups are already shown as the legend with colors, coloring it in the chart makes it redundant and it does not value add to the illustration by confusing the readers. The colors should be as simple and indicative as possible. 
+
+* According to the data source, the data should be showing multiple years on the x-axis. However, the labeling on the axis is compressed to only 2015. It undermines the purpose of the labeling as it does not indicate the changes because readers will take it as only 2015 data. 
+
+* On the top x-axis, the texts for "70 & over" and "75 & over" are not fully shown as well. The columns must be well adjusted to ensure all texts for labels are shown for inconvenience of the reader and professionalism. 
+
+* There is no lebeling or annotation on the density chart columns, it is difficult for readers to know exactly what is the rate at a specific point. Readers have to eyeball their own reference line across. 
+
+# 3. Proposed design 
+
+## 3.1 Design sketch 
+
+![](C:/xiaoqimin/VA/DataViz/DataViz1/picture.png)
+
+## 3.2 Advantages of proposed design 
+
+* The chart utilizes titles to present key information that need to be conveyed to the readers. The main dashboard title shows the overview of the data, specifying the components such as gender, age group and years covered. The title of each chart presents the key insight of the chart, and the subtitles shows the the data information used. In this way, readers are able to have a top-down approach to reading the chart, gain clarity and improve understandability. 
+
+* The data visualization includes 2 charts, the first chart shows the overall male and female trends over the years, and illustrating the difference between the rates yearly. The second chart breaks down the rates by age groups, for readers to easily compare the changes to both genders over time. 
+
+* Aesthetically, the charts only limit to 2 colors differentiating male and female. Line graph is used to show the trend over the years instead of density chart, it is easier for readers to interpret and reduce unnecessary spaces. 
+
+* Age groups are cleaned to remove overlapping data
+
+* Data lebels are shown so that readers can instantly see the rates and changes in the trend. 
+
+* Axes are properly labeled with abbreviations and units 
+
+* Included data source recognition 
+
+# 4. Data visualization steps 
+
+## 4.1 Data preparation 
+
+Before we head to plotting the graph, we need to clean the original data set to fit our visualization purposes. Data preparation will be done in Tableau Prep Builder. The detailed steps as below: 
+
+No. | Step                                       | Description 
+----|--------------------------------------------|-----------
+1   | The raw data consists of 2 sheets, the second worksheet will be used with more specified age groups.| ![](C:/xiaoqimin/VA/DataViz/DataViz1/1.png){width=50%}
+2   | Create a new excel workbook, copy the 3 segments (Total, Males, Females) from “mrsd_Res_LFPR_2” into the new workbook as 3 separate worksheets, with years only from 2010 to 2021. | ![](C:/xiaoqimin/VA/DataViz/DataViz1/2.png){width=50%}
+3   | Open Tableau Prep Builder, click on the “+” besides “Connections” to import the excel workbook created in Step 2. The worksheets  will be shown under “Tables”.  | ![](C:/xiaoqimin/VA/DataViz/DataViz1/3.png){width=20%}
+4   | Drag “total” worksheet into the flow pane, click on the “+” button and add a “Clean Step”.  | ![](C:/xiaoqimin/VA/DataViz/DataViz1/4.png){width=50%}
+5   | Under column “F1”, select “70 & Over” and “Age(Years)/Sex” and right click on “Exclude” to delete these rows as they are unnecessary data rows. Then change the “F1” column name to “age group”. | ![](C:/xiaoqimin/VA/DataViz/DataViz1/5.png){width=50%}
+6   | For the rest of the column name, change them in order of year, i.e. 2010 to 2021. | ![](C:/xiaoqimin/VA/DataViz/DataViz1/6.png){width=50%}
+7   | At the flow pane, create a new step “Pivot”. | ![](C:/xiaoqimin/VA/DataViz/DataViz1/7.png){width=50%}
+8   | Under the “Field”, select all the  years and drag into the “Pivoted Field” | ![](C:/xiaoqimin/VA/DataViz/DataViz1/8.png){width=50%}
+9   | Under “Pivot Results”, change “Pivot Name 1” to “year”, and “Pivot Value 1” to “percentage”| ![](C:/xiaoqimin/VA/DataViz/DataViz1/9.png){width=50%}
+10   | “Create Calculated Field” to add a new column “sex”, the values under this column will be “total”. | ![](C:/xiaoqimin/VA/DataViz/DataViz1/10.png){width=50%}
+11   | Drag the  column fields to rearrange them, final worksheet will be like this.  | ![](C:/xiaoqimin/VA/DataViz/DataViz1/11.png){width=50%}
+12   | Drag “male” worksheet into the flow pane, add a new step| ![](C:/xiaoqimin/VA/DataViz/DataViz1/12.png){width=50%}
+13   | Under column “F1”, select “70 & over” and “Exclude”. Change the column name to “age group” and row name “Males” to “Males total”.| ![](C:/xiaoqimin/VA/DataViz/DataViz1/13.png){width=50%}
+14   | Repeat step 6-11, to create the final worksheet for “Males”. | ![](C:/xiaoqimin/VA/DataViz/DataViz1/14.png){width=50%}
+15   | Repeat step 12-14 to create the final worksheet for “Females” | ![](C:/xiaoqimin/VA/DataViz/DataViz1/15.png){width=50%}
+16   | Click on the “+” button and select “Union”, drag the other two worksheets to “Add” to merge the 3 worksheets into one output.| ![](C:/xiaoqimin/VA/DataViz/DataViz1/16.png)
+17   | “Remove” the column for “Table Names”  | ![](C:/xiaoqimin/VA/DataViz/DataViz1/17.png){width=30%}
+18   | Click on “+” and select “Output”.Choose the file destination to be saved and “Run Flow” to save the file. |![](C:/xiaoqimin/VA/DataViz/DataViz1/181.png)
+
+## 4.2 Data visualization 
+
+### 4.2.1 Plotting chart 1 
+
+
+No. | Step                                       | Description 
+----|--------------------------------------------|-----------
+1   | Open Tableau Desktop and drag the cleaned data file into the working pane  | ![](C:/xiaoqimin/VA/DataViz/DataViz1/19.png){width=80%}
+2   | Drag “Year” into columns and “Percentage” into rows | ![](C:/xiaoqimin/VA/DataViz/DataViz1/20.png){width=80%}
+3   | Drag “Sex” into the filter pane, and check “female” and “male” to show the labor participation rate related to female and male population |   ![](C:/xiaoqimin/VA/DataViz/DataViz1/21.png){width=40% height=80%}
+4   | Drag “Age Group” into the filter pane, and check “Females total” and “Males total” to show the yearly total labor participation rate related to female and male population| ![](C:/xiaoqimin/VA/DataViz/DataViz1/22.png){width=40% height=80%}
+5   | Drag “Sex” into the color box to separate the chart by male and female values| ![](C:/xiaoqimin/VA/DataViz/DataViz1/23.png){width=30%}
+6   | On the “Sex” legend, right click and choose “Edit Colors”, choose pink for female and blue for male. | ![](C:/xiaoqimin/VA/DataViz/DataViz1/24.png){width=80%}
+7   | Change the chart type to “Line”, click on “Label” and check “Show mark labels” | ![](C:/xiaoqimin/VA/DataViz/DataViz1/25.png){width=80%}
+8   | Navigate to Analysis > Table Layout > Advanced. In the Table Options dialog, in the Default number format section, select Manual. For Decimal places, type in 1.| ![](C:/xiaoqimin/VA/DataViz/DataViz1/26.png){width=40% height=70%}
+9   | Choose the range of axis to be “Fixed” from 50 onwards, and change the axis title to “LFPR (%)”| ![](C:/xiaoqimin/VA/DataViz/DataViz1/27.png){width=40% height=80%}
+10  | Drag “Percentage” into the rows to create a secondary plot, choose “Quick Table Calculation” and “Difference” to calculate the difference between the male and female labor participation rate in a specific year.| ![](C:/xiaoqimin/VA/DataViz/DataViz1/28.png){width=70%}
+11  | Under “Edit Table Calculation”, choose compute using specific dimensions and check only “Sex”, this will only calculate the difference between male and female on a yearly basis | ![](C:/xiaoqimin/VA/DataViz/DataViz1/29.png){width=70%}
+12  | Change the title for secondary plot | ![](C:/xiaoqimin/VA/DataViz/DataViz1/30.png){width=40% height=80%}
+13  | Change the title of the chart, differentiate title and subtitles by font size and bolding. | ![](C:/xiaoqimin/VA/DataViz/DataViz1/31.png)
+
+### 4.2.2 Plotting chart 2 
+
+No. | Step                                       | Description 
+----|--------------------------------------------|-----------
+1  | Drag “Age Group” and “Year” into columns, “Percentage” into rows| ![](C:/xiaoqimin/VA/DataViz/DataViz1/32.png){width=80%}
+2  | Drag “Age Group” into filters and uncheck the rows related to total percentages | ![](C:/xiaoqimin/VA/DataViz/DataViz1/33.png){width=40%}
+3  | Drag “Sex” into filters and only check female and male as we want to separate the chart by gender  | ![](C:/xiaoqimin/VA/DataViz/DataViz1/34.png){width=40%}
+4  | Drag “Sex” into the color box to have differentiated colors by gender | ![](C:/xiaoqimin/VA/DataViz/DataViz1/35.png){width=30% height=60%}
+5  | Change the chart type to “Line”| ![](C:/xiaoqimin/VA/DataViz/DataViz1/36.png)
+6  | Change the y-axis title | ![](C:/xiaoqimin/VA/DataViz/DataViz1/37.png)
+7  | Change chart title |![](C:/xiaoqimin/VA/DataViz/DataViz1/38.png)
+
+
+### 4.2.3 Creating dashboard
+
+No. | Step                                       | Description 
+----|--------------------------------------------|-----------
+1  | Pull the two worksheets into the dashboard pane, and change the title of the dashboard | ![](C:/xiaoqimin/VA/DataViz/DataViz1/39.png){width=80%}
+2  | Click on “layout” and change the color of the background of the title | ![](C:/xiaoqimin/VA/DataViz/DataViz1/40.png){height=50%}
+3  | Drag sex filter to the bottom of the dashboard| ![](C:/xiaoqimin/VA/DataViz/DataViz1/41.png){width=80%}
+4  | For the filter, click on “Arrange items”, “Single row” | ![](C:/xiaoqimin/VA/DataViz/DataViz1/42.png){height=50%}
+5  | Under “Objects”, drag “Text” box into the dashboard to create captions| ![](C:/xiaoqimin/VA/DataViz/DataViz1/43.png){height=50%}
+6  | Include the data source and data link | ![](C:/xiaoqimin/VA/DataViz/DataViz1/44.png){height=50%}
+
+
+
+
+# 5. Conclusion and insights 
+
+## 5.1 Final data visualization 
+
+The final data visualization is shown below, it is also available at [Tableau Public](https://public.tableau.com/app/profile/xiaoqi.min/viz/DataVizMakeover1_16446730691490/Dashboard1)
+
+![](C:/xiaoqimin/VA/DataViz/DataViz1/final.png)
+
+## 5.2 Insights 
+
+* Males' total Labor Force Participation Rate(LFPR) is always higher than females over the years, but the gap is narrowing from 20% difference in rate for 2010 to 13% difference in 2021. This is due to the increasing recognition of women equality in Singapore as stated by [Ministry of Manpower](https://stats.mom.gov.sg/Pages/a-gender-inclusive-workforce.aspx#:~:text=%E2%80%8B%E2%80%8BDecades%20of%20social,our%20community%2C%20including%20job%20opportunities.&text=This%20is%20especially%20so%20over,2018%20to%2061.2%25%20in%202020.) More women received higher education and are financially independent, hence leading to a rise in women's labor force participation rate. 
+
+![](C:/xiaoqimin/VA/DataViz/DataViz1/Picture02.png)
+
+This is also reflected in the yearly LFPR by gender and age groups chart. We can see that the female LFPR saw steep increase over the past 12 years for majority of age groups, especially in the middle-age groups. This also reflects Singapore being a more inclusive society and caring for women rights. Singapore government has also put in support for women to pursue their careers by providing caregiving supports and flexible working arrangements, stated by [Channel News Asia](https://www.channelnewsasia.com/singapore/employment-rate-singapore-women-rose-past-decade-share-among-pmet-ministry-manpower-2430196). 
+
+* There is a sharp fall in LFPR for both male and female in 2020, while the rate changes remain relatively stable for other age groups in 2020. The LFPR then rebounced on 2021 for both genders. This is the impact of the COVID-19 pandemic that struck in 2020. As the economy was shrinking, employers are cutting manpower to reduce costs. Fresh graduates were more difficult to find jobs as they require additional training efforts. Hence, employers would not prefer to hire fresh graduates at the point of economic recession. However, experienced hires are more preferred as they can bring immediate value to the firm. Hence, the changes in LFPR for other ages groups are not as significant. Admit the recession in labor market, the government and universities had rolled out different measures to help student employment, such as [Jobs Growth Incentive (JGI)](https://www.iras.gov.sg/schemes/disbursement-schemes/jobs-growth-incentive) and the [SGUnited](https://www.wsg.gov.sg/SGUnited.html). In addition to the improving situations of pandemic and economy, the LFPR rebounced in the past year as seen from the chart. 
+
+![](C:/xiaoqimin/VA/DataViz/DataViz1/Picture01.png)
+
+* Seniors LFPR increased constantly for both genders over the decade. There are a few factors for this trend. Firstly, Singapore's improving life expectancy had led our workforce population ageing rapidly. Singapore government implemented various supporting packages provided to senior workers, such as [Senior Worker Early Adopter Grant](https://www.mom.gov.sg/employment-practices/schemes-for-employers-and-employees/senior-worker-early-adopter-grant-and-part-time-re-employment-grant) and [Senior Employment Credit](https://www.iras.gov.sg/schemes/disbursement-schemes/senior-employment-credit-(sec)-cpf-transition-offset-(cto)-and-enabling-employment-credit-(eec)) that helped seniors to secure employment opportunities. Lastly, seniors' own motivations for work, stated in a [report by Duke NUS](https://www.duke-nus.edu.sg/docs/librariesprovider3/research-policy-brief-docs/triumphs-and-tribulations-of-older-workers-findings-from-a-focus-group-inquiry-into---amended5342e88c41de4d12981389305e25ea61.pdf?sfvrsn=a5ebdc19_0), including achieving healthy and stronger body by working, financial independence and autonomy in later life as well as maintaining meaningful social engagement. 
+
+![](C:/xiaoqimin/VA/DataViz/DataViz1/Picture03.png)
+
+
+
