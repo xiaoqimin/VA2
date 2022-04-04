@@ -10,7 +10,7 @@ navbar:
     - text: "About"
       href: about.html
   left:
-    - text: "Take-home Exercise"
+    - text: "Assignments"
       menu:
         - text: "Take-home Exercise 1"
           href: "TH_Ex/Take_Home_Ex01/Take_Home_Ex01.html"
@@ -24,7 +24,7 @@ navbar:
           href: "DataViz/DataViz1/dataviz_makeover_1.html"
         - text: "DataViz2"
           href: "DataViz/DataViz2/dataviz2.html"
-    - text: "In-Class Exercise"
+    - text: "R Exercises"
       menu:
         - text: "In-Class Exercise 3"
           href: "In-Class-Ex/In-class-ex-03/in_class_Ex_03.html"
@@ -42,4 +42,8 @@ navbar:
           href: "In-Class-Ex/in-class-ex-08/in-class-ex-08.html"
         - text: "In-Class Exercise 9"
           href: "In-Class-Ex/in-class-ex-09/in-class-ex-09.html"
+    - text: "Project"
+      menu:
+        - text: "In-Class Exercise 3"
+          href: "In-Class-Ex/In-class-ex-03/in_class_Ex_03.html"
 output: distill::distill_article

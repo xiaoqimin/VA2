@@ -3,19 +3,18 @@
     {
       "path": "about.html",
       "title": "About this site",
-      "description": "Some additional details about the website",
+      "description": "Welcome to my visual analytics journey. This hosts the write up of my DataViz Makeovers, R visual exercises, and projects. ",
       "author": [],
       "contents": "\r\n\r\n\r\n\r\n",
-      "last_modified": "2022-03-27T12:24:28+08:00"
+      "last_modified": "2022-04-04T21:15:17+08:00"
     },
     {
       "path": "index.html",
-      "title": "My Website",
-      "description": "Welcome to the website. I hope you enjoy it!\n",
+      "title": "Visual Analytics and Applications",
       "author": [],
       "contents": "\r\n\r\n\r\n\r\n",
-      "last_modified": "2022-03-27T12:41:10+08:00"
+      "last_modified": "2022-04-04T21:15:32+08:00"
     }
   ],
-  "collections": []
+  "collections": ["posts/posts.json"]
 }
