@@ -24,26 +24,8 @@ navbar:
           href: "DataViz/DataViz1/dataviz_makeover_1.html"
         - text: "DataViz2"
           href: "DataViz/DataViz2/dataviz2.html"
-    - text: "R Exercises"
-      menu:
-        - text: "In-Class Exercise 3"
-          href: "In-Class-Ex/In-class-ex-03/in_class_Ex_03.html"
-        - text: "In-Class Exercise 4"
-          href: "In-Class-Ex/In-class-ex-04/in_class_Ex_04.html"
-        - text: "In-Class Exercise 5.1"
-          href: "In-Class-Ex/in-class-ex-05/in-class-ex-05.html"
-        - text: "In-Class Exercise 5.2"
-          href: "In-Class-Ex/in-class-ex-0502/in-class-ex-05-02.html"
-        - text: "In-Class Exercise 6"
-          href: "In-Class-Ex/in-class-ex-06/in-class-ex-06.html"
-        - text: "In-Class Exercise 7"
-          href: "In-Class-Ex/in-class-ex-07/in-class-ex-07.html"
-        - text: "In-Class Exercise 8"
-          href: "In-Class-Ex/in-class-ex-08/in-class-ex-08.html"
-        - text: "In-Class Exercise 9"
-          href: "In-Class-Ex/in-class-ex-09/in-class-ex-09.html"
+    
     - text: "Project"
       menu:
-        - text: "In-Class Exercise 3"
-          href: "In-Class-Ex/In-class-ex-03/in_class_Ex_03.html"
+        - href: "In-Class-Ex/In-class-ex-03/in_class_Ex_03.html"
 output: distill::distill_article
