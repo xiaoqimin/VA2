@@ -27,5 +27,8 @@ navbar:
     
     - text: "Project"
       menu:
-        - href: "In-Class-Ex/In-class-ex-03/in_class_Ex_03.html"
+        - text: "SPExploreR"
+          href: "SPExploreR/SGExploreR.html"
+        - text: "Nike Product Review"
+          href: "nike.html"
 output: distill::distill_article

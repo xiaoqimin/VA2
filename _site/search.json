@@ -1,0 +1,21 @@
+{
+  "articles": [
+    {
+      "path": "about.html",
+      "title": "About this site",
+      "description": "Welcome to my visual analytics journey. This hosts the write up of my DataViz Makeovers, R visual exercises, and projects. ",
+      "author": [],
+      "contents": "\r\n\r\n\r\n\r\n",
+      "last_modified": "2022-04-09T21:09:44+08:00"
+    },
+    {
+      "path": "index.html",
+      "title": "Visual Analytics and Applications",
+      "description": "Welcome to my visual analytics journey. This hosts the write up of my DataViz Makeovers, R visual exercises, and projects.",
+      "author": [],
+      "contents": "\r\n\r\n\r\n\r\n",
+      "last_modified": "2022-04-09T21:09:46+08:00"
+    }
+  ],
+  "collections": []
+}
