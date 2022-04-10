@@ -30,5 +30,5 @@ navbar:
         - text: "SPExploreR"
           href: "SPExploreR/SGExploreR.html"
         - text: "Nike Product Review"
-          href: "nike.html"
+          href: "nike/nike.html"
 output: distill::distill_article

@@ -87,638 +87,39 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 
 
   <!--radix_placeholder_meta_tags-->
-  <title>Visual Analytics: Visual Analytics and Applications</title>
+  <title>Nike Website Product Review Analysis</title>
 
-  <meta property="description" itemprop="description" content="Welcome to my visual analytics journey. This hosts the write up of my DataViz Makeovers, R visual exercises, and projects."/>
+  <meta property="description" itemprop="description" content="In this article, an in-depth analysis of Nike&#39;s shoe product review will be discussed in shoe product improvement and marketing persepectives."/>
 
 
+  <!--  https://schema.org/Article -->
+  <meta property="article:published" itemprop="datePublished" content="2022-04-10"/>
+  <meta property="article:created" itemprop="dateCreated" content="2022-04-10"/>
+  <meta name="article:author" content="Min Xiaoqi"/>
 
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-  <meta property="og:title" content="Visual Analytics: Visual Analytics and Applications"/>
+  <meta property="og:title" content="Nike Website Product Review Analysis"/>
   <meta property="og:type" content="article"/>
-  <meta property="og:description" content="Welcome to my visual analytics journey. This hosts the write up of my DataViz Makeovers, R visual exercises, and projects."/>
+  <meta property="og:description" content="In this article, an in-depth analysis of Nike&#39;s shoe product review will be discussed in shoe product improvement and marketing persepectives."/>
   <meta property="og:locale" content="en_US"/>
-  <meta property="og:site_name" content="Visual Analytics"/>
 
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
-  <meta property="twitter:title" content="Visual Analytics: Visual Analytics and Applications"/>
-  <meta property="twitter:description" content="Welcome to my visual analytics journey. This hosts the write up of my DataViz Makeovers, R visual exercises, and projects."/>
+  <meta property="twitter:title" content="Nike Website Product Review Analysis"/>
+  <meta property="twitter:description" content="In this article, an in-depth analysis of Nike&#39;s shoe product review will be discussed in shoe product improvement and marketing persepectives."/>
 
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
 
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","site","description"]}},"value":[{"type":"character","attributes":{},"value":["Visual Analytics and Applications"]},{"type":"character","attributes":{},"value":["distill::distill_website"]},{"type":"character","attributes":{},"value":["Welcome to my visual analytics journey. This hosts the write up of my DataViz Makeovers, R visual exercises, and projects."]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description","author","date","output"]}},"value":[{"type":"character","attributes":{},"value":["Nike Website Product Review Analysis"]},{"type":"character","attributes":{},"value":["In this article, an in-depth analysis of Nike's shoe product review will be discussed in shoe product improvement and marketing persepectives. \n"]},{"type":"list","attributes":{},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["name","url","affiliation","affiliation_url"]}},"value":[{"type":"character","attributes":{},"value":["Min Xiaoqi"]},{"type":"character","attributes":{},"value":["https://www.linkedin.com/in/xiaoqi-min/"]},{"type":"character","attributes":{},"value":["Master of IT in Business, Singapore Management University"]},{"type":"character","attributes":{},"value":["https://scis.smu.edu.sg/master-it-business/financial-technology-and-analytics-track"]}]}]},{"type":"character","attributes":{},"value":["2022-04-10"]},{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["distill::distill_article"]}},"value":[{"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["self_contained","toc","toc_depth"]}},"value":[{"type":"logical","attributes":{},"value":[false]},{"type":"logical","attributes":{},"value":[true]},{"type":"integer","attributes":{},"value":[2]}]}]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
+  
+  <script type="text/json" id="radix-resource-manifest">
+  {"type":"character","attributes":{},"value":["img/correlation.png","img/finalviz.png","img/Picture1.png","img/price.png","img/productmen.png","img/productwomen.png","img/quaterlyrating.png","img/topten.png","img/wordcloudbad.png","img/wordcloudgood.png","nike_files/anchor-4.2.2/anchor.min.js","nike_files/bowser-1.9.3/bowser.min.js","nike_files/distill-2.2.21/template.v2.js","nike_files/header-attrs-2.11/header-attrs.js","nike_files/jquery-3.6.0/jquery-3.6.0.js","nike_files/jquery-3.6.0/jquery-3.6.0.min.js","nike_files/jquery-3.6.0/jquery-3.6.0.min.map","nike_files/popper-2.6.0/popper.min.js","nike_files/tippy-6.2.7/tippy-bundle.umd.min.js","nike_files/tippy-6.2.7/tippy-light-border.css","nike_files/tippy-6.2.7/tippy.css","nike_files/tippy-6.2.7/tippy.umd.min.js","nike_files/webcomponents-2.0.0/webcomponents.js"]}
+  </script>
   <!--radix_placeholder_navigation_in_header-->
-  <meta name="distill:offset" content=""/>
-
-  <script type="application/javascript">
-
-    window.headroom_prevent_pin = false;
-
-    window.document.addEventListener("DOMContentLoaded", function (event) {
-
-      // initialize headroom for banner
-      var header = $('header').get(0);
-      var headerHeight = header.offsetHeight;
-      var headroom = new Headroom(header, {
-        tolerance: 5,
-        onPin : function() {
-          if (window.headroom_prevent_pin) {
-            window.headroom_prevent_pin = false;
-            headroom.unpin();
-          }
-        }
-      });
-      headroom.init();
-      if(window.location.hash)
-        headroom.unpin();
-      $(header).addClass('headroom--transition');
-
-      // offset scroll location for banner on hash change
-      // (see: https://github.com/WickyNilliams/headroom.js/issues/38)
-      window.addEventListener("hashchange", function(event) {
-        window.scrollTo(0, window.pageYOffset - (headerHeight + 25));
-      });
-
-      // responsive menu
-      $('.distill-site-header').each(function(i, val) {
-        var topnav = $(this);
-        var toggle = topnav.find('.nav-toggle');
-        toggle.on('click', function() {
-          topnav.toggleClass('responsive');
-        });
-      });
-
-      // nav dropdowns
-      $('.nav-dropbtn').click(function(e) {
-        $(this).next('.nav-dropdown-content').toggleClass('nav-dropdown-active');
-        $(this).parent().siblings('.nav-dropdown')
-           .children('.nav-dropdown-content').removeClass('nav-dropdown-active');
-      });
-      $("body").click(function(e){
-        $('.nav-dropdown-content').removeClass('nav-dropdown-active');
-      });
-      $(".nav-dropdown").click(function(e){
-        e.stopPropagation();
-      });
-    });
-  </script>
-
-  <style type="text/css">
-
-  /* Theme (user-documented overrideables for nav appearance) */
-
-  .distill-site-nav {
-    color: rgba(255, 255, 255, 0.8);
-    background-color: #0F2E3D;
-    font-size: 15px;
-    font-weight: 300;
-  }
-
-  .distill-site-nav a {
-    color: inherit;
-    text-decoration: none;
-  }
-
-  .distill-site-nav a:hover {
-    color: white;
-  }
-
-  @media print {
-    .distill-site-nav {
-      display: none;
-    }
-  }
-
-  .distill-site-header {
-
-  }
-
-  .distill-site-footer {
-
-  }
-
-
-  /* Site Header */
-
-  .distill-site-header {
-    width: 100%;
-    box-sizing: border-box;
-    z-index: 3;
-  }
-
-  .distill-site-header .nav-left {
-    display: inline-block;
-    margin-left: 8px;
-  }
-
-  @media screen and (max-width: 768px) {
-    .distill-site-header .nav-left {
-      margin-left: 0;
-    }
-  }
-
-
-  .distill-site-header .nav-right {
-    float: right;
-    margin-right: 8px;
-  }
-
-  .distill-site-header a,
-  .distill-site-header .title {
-    display: inline-block;
-    text-align: center;
-    padding: 14px 10px 14px 10px;
-  }
-
-  .distill-site-header .title {
-    font-size: 18px;
-    min-width: 150px;
-  }
-
-  .distill-site-header .logo {
-    padding: 0;
-  }
-
-  .distill-site-header .logo img {
-    display: none;
-    max-height: 20px;
-    width: auto;
-    margin-bottom: -4px;
-  }
-
-  .distill-site-header .nav-image img {
-    max-height: 18px;
-    width: auto;
-    display: inline-block;
-    margin-bottom: -3px;
-  }
-
-
-
-  @media screen and (min-width: 1000px) {
-    .distill-site-header .logo img {
-      display: inline-block;
-    }
-    .distill-site-header .nav-left {
-      margin-left: 20px;
-    }
-    .distill-site-header .nav-right {
-      margin-right: 20px;
-    }
-    .distill-site-header .title {
-      padding-left: 12px;
-    }
-  }
-
-
-  .distill-site-header .nav-toggle {
-    display: none;
-  }
-
-  .nav-dropdown {
-    display: inline-block;
-    position: relative;
-  }
-
-  .nav-dropdown .nav-dropbtn {
-    border: none;
-    outline: none;
-    color: rgba(255, 255, 255, 0.8);
-    padding: 16px 10px;
-    background-color: transparent;
-    font-family: inherit;
-    font-size: inherit;
-    font-weight: inherit;
-    margin: 0;
-    margin-top: 1px;
-    z-index: 2;
-  }
-
-  .nav-dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: white;
-    min-width: 200px;
-    border: 1px solid rgba(0,0,0,0.15);
-    border-radius: 4px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.1);
-    z-index: 1;
-    margin-top: 2px;
-    white-space: nowrap;
-    padding-top: 4px;
-    padding-bottom: 4px;
-  }
-
-  .nav-dropdown-content hr {
-    margin-top: 4px;
-    margin-bottom: 4px;
-    border: none;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-  }
-
-  .nav-dropdown-active {
-    display: block;
-  }
-
-  .nav-dropdown-content a, .nav-dropdown-content .nav-dropdown-header {
-    color: black;
-    padding: 6px 24px;
-    text-decoration: none;
-    display: block;
-    text-align: left;
-  }
-
-  .nav-dropdown-content .nav-dropdown-header {
-    display: block;
-    padding: 5px 24px;
-    padding-bottom: 0;
-    text-transform: uppercase;
-    font-size: 14px;
-    color: #999999;
-    white-space: nowrap;
-  }
-
-  .nav-dropdown:hover .nav-dropbtn {
-    color: white;
-  }
-
-  .nav-dropdown-content a:hover {
-    background-color: #ddd;
-    color: black;
-  }
-
-  .nav-right .nav-dropdown-content {
-    margin-left: -45%;
-    right: 0;
-  }
-
-  @media screen and (max-width: 768px) {
-    .distill-site-header a, .distill-site-header .nav-dropdown  {display: none;}
-    .distill-site-header a.nav-toggle {
-      float: right;
-      display: block;
-    }
-    .distill-site-header .title {
-      margin-left: 0;
-    }
-    .distill-site-header .nav-right {
-      margin-right: 0;
-    }
-    .distill-site-header {
-      overflow: hidden;
-    }
-    .nav-right .nav-dropdown-content {
-      margin-left: 0;
-    }
-  }
-
-
-  @media screen and (max-width: 768px) {
-    .distill-site-header.responsive {position: relative; min-height: 500px; }
-    .distill-site-header.responsive a.nav-toggle {
-      position: absolute;
-      right: 0;
-      top: 0;
-    }
-    .distill-site-header.responsive a,
-    .distill-site-header.responsive .nav-dropdown {
-      display: block;
-      text-align: left;
-    }
-    .distill-site-header.responsive .nav-left,
-    .distill-site-header.responsive .nav-right {
-      width: 100%;
-    }
-    .distill-site-header.responsive .nav-dropdown {float: none;}
-    .distill-site-header.responsive .nav-dropdown-content {position: relative;}
-    .distill-site-header.responsive .nav-dropdown .nav-dropbtn {
-      display: block;
-      width: 100%;
-      text-align: left;
-    }
-  }
-
-  /* Site Footer */
-
-  .distill-site-footer {
-    width: 100%;
-    overflow: hidden;
-    box-sizing: border-box;
-    z-index: 3;
-    margin-top: 30px;
-    padding-top: 30px;
-    padding-bottom: 30px;
-    text-align: center;
-  }
-
-  /* Headroom */
-
-  d-title {
-    padding-top: 6rem;
-  }
-
-  @media print {
-    d-title {
-      padding-top: 4rem;
-    }
-  }
-
-  .headroom {
-    z-index: 1000;
-    position: fixed;
-    top: 0;
-    left: 0;
-    right: 0;
-  }
-
-  .headroom--transition {
-    transition: all .4s ease-in-out;
-  }
-
-  .headroom--unpinned {
-    top: -100px;
-  }
-
-  .headroom--pinned {
-    top: 0;
-  }
-
-  /* adjust viewport for navbar height */
-  /* helps vertically center bootstrap (non-distill) content */
-  .min-vh-100 {
-    min-height: calc(100vh - 100px) !important;
-  }
-
-  </style>
-
-  <script src="site_libs/jquery-3.6.0/jquery-3.6.0.min.js"></script>
-  <link href="site_libs/font-awesome-5.1.0/css/all.css" rel="stylesheet"/>
-  <link href="site_libs/font-awesome-5.1.0/css/v4-shims.css" rel="stylesheet"/>
-  <script src="site_libs/headroom-0.9.4/headroom.min.js"></script>
-  <script src="site_libs/autocomplete-0.37.1/autocomplete.min.js"></script>
-  <script src="site_libs/fuse-6.4.1/fuse.min.js"></script>
-
-  <script type="application/javascript">
-
-  function getMeta(metaName) {
-    var metas = document.getElementsByTagName('meta');
-    for (let i = 0; i < metas.length; i++) {
-      if (metas[i].getAttribute('name') === metaName) {
-        return metas[i].getAttribute('content');
-      }
-    }
-    return '';
-  }
-
-  function offsetURL(url) {
-    var offset = getMeta('distill:offset');
-    return offset ? offset + '/' + url : url;
-  }
-
-  function createFuseIndex() {
-
-    // create fuse index
-    var options = {
-      keys: [
-        { name: 'title', weight: 20 },
-        { name: 'categories', weight: 15 },
-        { name: 'description', weight: 10 },
-        { name: 'contents', weight: 5 },
-      ],
-      ignoreLocation: true,
-      threshold: 0
-    };
-    var fuse = new window.Fuse([], options);
-
-    // fetch the main search.json
-    return fetch(offsetURL('search.json'))
-      .then(function(response) {
-        if (response.status == 200) {
-          return response.json().then(function(json) {
-            // index main articles
-            json.articles.forEach(function(article) {
-              fuse.add(article);
-            });
-            // download collections and index their articles
-            return Promise.all(json.collections.map(function(collection) {
-              return fetch(offsetURL(collection)).then(function(response) {
-                if (response.status === 200) {
-                  return response.json().then(function(articles) {
-                    articles.forEach(function(article) {
-                      fuse.add(article);
-                    });
-                  })
-                } else {
-                  return Promise.reject(
-                    new Error('Unexpected status from search index request: ' +
-                              response.status)
-                  );
-                }
-              });
-            })).then(function() {
-              return fuse;
-            });
-          });
-
-        } else {
-          return Promise.reject(
-            new Error('Unexpected status from search index request: ' +
-                        response.status)
-          );
-        }
-      });
-  }
-
-  window.document.addEventListener("DOMContentLoaded", function (event) {
-
-    // get search element (bail if we don't have one)
-    var searchEl = window.document.getElementById('distill-search');
-    if (!searchEl)
-      return;
-
-    createFuseIndex()
-      .then(function(fuse) {
-
-        // make search box visible
-        searchEl.classList.remove('hidden');
-
-        // initialize autocomplete
-        var options = {
-          autoselect: true,
-          hint: false,
-          minLength: 2,
-        };
-        window.autocomplete(searchEl, options, [{
-          source: function(query, callback) {
-            const searchOptions = {
-              isCaseSensitive: false,
-              shouldSort: true,
-              minMatchCharLength: 2,
-              limit: 10,
-            };
-            var results = fuse.search(query, searchOptions);
-            callback(results
-              .map(function(result) { return result.item; })
-            );
-          },
-          templates: {
-            suggestion: function(suggestion) {
-              var img = suggestion.preview && Object.keys(suggestion.preview).length > 0
-                ? `<img src="${offsetURL(suggestion.preview)}"</img>`
-                : '';
-              var html = `
-                <div class="search-item">
-                  <h3>${suggestion.title}</h3>
-                  <div class="search-item-description">
-                    ${suggestion.description || ''}
-                  </div>
-                  <div class="search-item-preview">
-                    ${img}
-                  </div>
-                </div>
-              `;
-              return html;
-            }
-          }
-        }]).on('autocomplete:selected', function(event, suggestion) {
-          window.location.href = offsetURL(suggestion.path);
-        });
-        // remove inline display style on autocompleter (we want to
-        // manage responsive display via css)
-        $('.algolia-autocomplete').css("display", "");
-      })
-      .catch(function(error) {
-        console.log(error);
-      });
-
-  });
-
-  </script>
-
-  <style type="text/css">
-
-  .nav-search {
-    font-size: x-small;
-  }
-
-  /* Algolioa Autocomplete */
-
-  .algolia-autocomplete {
-    display: inline-block;
-    margin-left: 10px;
-    vertical-align: sub;
-    background-color: white;
-    color: black;
-    padding: 6px;
-    padding-top: 8px;
-    padding-bottom: 0;
-    border-radius: 6px;
-    border: 1px #0F2E3D solid;
-    width: 180px;
-  }
-
-
-  @media screen and (max-width: 768px) {
-    .distill-site-nav .algolia-autocomplete {
-      display: none;
-      visibility: hidden;
-    }
-    .distill-site-nav.responsive .algolia-autocomplete {
-      display: inline-block;
-      visibility: visible;
-    }
-    .distill-site-nav.responsive .algolia-autocomplete .aa-dropdown-menu {
-      margin-left: 0;
-      width: 400px;
-      max-height: 400px;
-    }
-  }
-
-  .algolia-autocomplete .aa-input, .algolia-autocomplete .aa-hint {
-    width: 90%;
-    outline: none;
-    border: none;
-  }
-
-  .algolia-autocomplete .aa-hint {
-    color: #999;
-  }
-  .algolia-autocomplete .aa-dropdown-menu {
-    width: 550px;
-    max-height: 70vh;
-    overflow-x: visible;
-    overflow-y: scroll;
-    padding: 5px;
-    margin-top: 3px;
-    margin-left: -150px;
-    background-color: #fff;
-    border-radius: 5px;
-    border: 1px solid #999;
-    border-top: none;
-  }
-
-  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion {
-    cursor: pointer;
-    padding: 5px 4px;
-    border-bottom: 1px solid #eee;
-  }
-
-  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion:last-of-type {
-    border-bottom: none;
-    margin-bottom: 2px;
-  }
-
-  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item {
-    overflow: hidden;
-    font-size: 0.8em;
-    line-height: 1.4em;
-  }
-
-  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item h3 {
-    font-size: 1rem;
-    margin-block-start: 0;
-    margin-block-end: 5px;
-  }
-
-  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item-description {
-    display: inline-block;
-    overflow: hidden;
-    height: 2.8em;
-    width: 80%;
-    margin-right: 4%;
-  }
-
-  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item-preview {
-    display: inline-block;
-    width: 15%;
-  }
-
-  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item-preview img {
-    height: 3em;
-    width: auto;
-    display: none;
-  }
-
-  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion .search-item-preview img[src] {
-    display: initial;
-  }
-
-  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion.aa-cursor {
-    background-color: #eee;
-  }
-  .algolia-autocomplete .aa-dropdown-menu .aa-suggestion em {
-    font-weight: bold;
-    font-style: normal;
-  }
-
-  </style>
-
-
   <!--/radix_placeholder_navigation_in_header-->
   <!--radix_placeholder_distill-->
 
@@ -2037,15 +1438,16 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
   </script>
 
   <!--/radix_placeholder_distill-->
-  <script src="site_libs/header-attrs-2.11/header-attrs.js"></script>
-  <script src="site_libs/popper-2.6.0/popper.min.js"></script>
-  <link href="site_libs/tippy-6.2.7/tippy.css" rel="stylesheet" />
-  <link href="site_libs/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
-  <script src="site_libs/tippy-6.2.7/tippy.umd.min.js"></script>
-  <script src="site_libs/anchor-4.2.2/anchor.min.js"></script>
-  <script src="site_libs/bowser-1.9.3/bowser.min.js"></script>
-  <script src="site_libs/webcomponents-2.0.0/webcomponents.js"></script>
-  <script src="site_libs/distill-2.2.21/template.v2.js"></script>
+  <script src="nike_files/header-attrs-2.11/header-attrs.js"></script>
+  <script src="nike_files/jquery-3.6.0/jquery-3.6.0.min.js"></script>
+  <script src="nike_files/popper-2.6.0/popper.min.js"></script>
+  <link href="nike_files/tippy-6.2.7/tippy.css" rel="stylesheet" />
+  <link href="nike_files/tippy-6.2.7/tippy-light-border.css" rel="stylesheet" />
+  <script src="nike_files/tippy-6.2.7/tippy.umd.min.js"></script>
+  <script src="nike_files/anchor-4.2.2/anchor.min.js"></script>
+  <script src="nike_files/bowser-1.9.3/bowser.min.js"></script>
+  <script src="nike_files/webcomponents-2.0.0/webcomponents.js"></script>
+  <script src="nike_files/distill-2.2.21/template.v2.js"></script>
   <!--radix_placeholder_site_in_header-->
   <!--/radix_placeholder_site_in_header-->
 
@@ -2057,70 +1459,126 @@ code span.wa { color: #5e5e5e; font-style: italic; } /* Warning */
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Visual Analytics and Applications","description":"Welcome to my visual analytics journey. This hosts the write up of my DataViz Makeovers, R visual exercises, and projects.","authors":[]}
+{"title":"Nike Website Product Review Analysis","description":"In this article, an in-depth analysis of Nike's shoe product review will be discussed in shoe product improvement and marketing persepectives.","authors":[{"author":"Min Xiaoqi","authorURL":"https://www.linkedin.com/in/xiaoqi-min/","affiliation":"Master of IT in Business, Singapore Management University","affiliationURL":"https://scis.smu.edu.sg/master-it-business/financial-technology-and-analytics-track","orcidID":""}],"publishedDate":"2022-04-10T00:00:00.000+08:00","citationText":"Xiaoqi, 2022"}
 </script>
 
 <!--/radix_placeholder_front_matter-->
 <!--radix_placeholder_navigation_before_body-->
-<header class="header header--fixed" role="banner">
-<nav class="distill-site-nav distill-site-header">
-<div class="nav-left">
-<a href="index.html" class="title">Visual Analytics</a>
-<div class="nav-dropdown">
-<button class="nav-dropbtn">
-Assignments
- 
-<span class="down-arrow">&#x25BE;</span>
-</button>
-<div class="nav-dropdown-content">
-<a href="TH_Ex/Take_Home_Ex01/Take_Home_Ex01.html">Take-home Exercise 1</a>
-<a href="TH_Ex/Take_Home_Ex02/take_home_ex_2.html">Take-home Exercise 2</a>
-<a href="TH_Ex/Take_Home_Ex03/take_home_ex_03.html">Take-home Exercise 3</a>
-</div>
-</div>
-<div class="nav-dropdown">
-<button class="nav-dropbtn">
-DataViz Makeover
- 
-<span class="down-arrow">&#x25BE;</span>
-</button>
-<div class="nav-dropdown-content">
-<a href="DataViz/DataViz1/dataviz_makeover_1.html">DataViz1</a>
-<a href="DataViz/DataViz2/dataviz2.html">DataViz2</a>
-</div>
-</div>
-<div class="nav-dropdown">
-<button class="nav-dropbtn">
-Project
- 
-<span class="down-arrow">&#x25BE;</span>
-</button>
-<div class="nav-dropdown-content">
-<a href="SPExploreR/SGExploreR.html">SPExploreR</a>
-<a href="nike/nike.html">Nike Product Review</a>
-</div>
-</div>
-</div>
-<div class="nav-right">
-<a href="index.html">Home</a>
-<a href="about.html">About</a>
-<a href="javascript:void(0);" class="nav-toggle">&#9776;</a>
-</div>
-</nav>
-</header>
 <!--/radix_placeholder_navigation_before_body-->
 <!--radix_placeholder_site_before_body-->
 <!--/radix_placeholder_site_before_body-->
 
 <div class="d-title">
-<h1>Visual Analytics and Applications</h1>
+<h1>Nike Website Product Review Analysis</h1>
 <!--radix_placeholder_categories-->
 <!--/radix_placeholder_categories-->
-<p><p>Welcome to my visual analytics journey. This hosts the write up of my DataViz Makeovers, R visual exercises, and projects.</p></p>
+<p><p>In this article, an in-depth analysis of Nike’s shoe product review will be discussed in shoe product improvement and marketing persepectives.</p></p>
 </div>
 
+<div class="d-byline">
+  Min Xiaoqi <a href="https://www.linkedin.com/in/xiaoqi-min/" class="uri">https://www.linkedin.com/in/xiaoqi-min/</a> (Master of IT in Business, Singapore Management University)<a href="https://scis.smu.edu.sg/master-it-business/financial-technology-and-analytics-track" class="uri">https://scis.smu.edu.sg/master-it-business/financial-technology-and-analytics-track</a>
+  
+<br/>2022-04-10
+</div>
 
 <div class="d-article">
+<div class="d-contents d-contents-float">
+<nav class="l-text toc figcaption" id="TOC">
+<h3>Contents</h3>
+<ul>
+<li><a href="#introduction">Introduction</a></li>
+<li><a href="#the-data">The Data</a></li>
+<li><a href="#the-approach">The Approach</a></li>
+<li><a href="#data-visualization-dashboard">Data Visualization Dashboard</a></li>
+<li><a href="#product-distribution">1.0 Product Distribution</a></li>
+<li><a href="#average-product-ratings">2.0 Average Product Ratings</a></li>
+<li><a href="#price-distribution">3.0 Price Distribution</a></li>
+<li><a href="#correlation-matrix">4.0 Correlation Matrix</a></li>
+<li><a href="#text-analysis">5.0 Text Analysis</a></li>
+<li><a href="#conclusion">Conclusion</a></li>
+</ul>
+</nav>
+</div>
+<h1 id="introduction">Introduction</h1>
+<p>Nike has built one of the world’s most influential brand names, especially in footwear. Its advertising slogans such as “Just Do It” and “There Is No Finish Line” have become powerful marketing tool that helped it to be the champion of brand builder.</p>
+<p>For this project, I will be analyzing Nike’s shoe products from the perspective of marketing and product improvements to further push Nike’s potential for higher performance.</p>
+<h1 id="the-data">The Data</h1>
+<p>The data is sourced from <a href="https://github.com/DanEllen/Nike-Shoes-Web-Scrape-and-Analysis">GitHub</a> where the author scrapped information directly from Nike’s official website. There are 2 raw datasets separated by gender, which has 23,524 rows of men’s data and 12,433 rows of women’s data. Each data set contains 17 data fields: ID, gender, product title, product URL, product category, price, descrption, number of reviews, average rating for produc reviews, average score for reviews input by users based on size, comfort, and durability, individual review’s title, score, body and date.</p>
+<h1 id="the-approach">The Approach</h1>
+<p>For the purpose of this project, data cleaning was done via Microsoft Excel:</p>
+<ul>
+<li><p>Two raw data sets were joined together</p></li>
+<li><p>Original product “title” was changed to “Product”</p></li>
+<li><p>Noticed that under “Category” field, there are values such as “Men’s Shoes”, “Shoe”, “Woman’s Shoes” which do not belong to specific category based on functions. These rows are filtered out to re-categorize them based on their collections or series, such as “Nike Air”, ”Nike Zoom”, “Jordan” etc. In addition, categories with “custom” series are grouped to form “Custom Shoe” category. Finally, gender specific names in “category” such as “Men’s Basketball Shoe” and “Woman’s Basketball Shoe” are changed to “Basketball Shoe” to synchronize product category.</p></li>
+</ul>
+<p>For data visualization, a combination of R and Tableau was used for different visualization techniques to achieve the final dashboard and represented in Tableau Dashboard format. Below explains 2 visualizations that were done via RStudio:</p>
+<ul>
+<li>Correlation Matrix was done using <em>corrplot</em>.</li>
+</ul>
+<p>A new data frame was created using the attributes that needs to be included in correlation matrix, namely price, number of reviews, score, size, durability, and comfort.</p>
+<p>The objective of correlation matrix is to reveal potential correlations among the attributes, especially if there exists impact by the user’s comments on size, comfort and durability on the product’s score.</p>
+<ul>
+<li>Text analysis was done using <em>wordcloud2</em>, <em>tm</em>,<em>SnowballC</em>, <em>readr</em>, <em>dplyr</em>, and <em>mlbench</em>.</li>
+</ul>
+<p>From the dataset, review title and review body were combined into a single data field. For this section, there are 2 visualizations to be built, one for reviews that have high ratings (ratings 4-5), and another for reviews that have low ratings (ratings 1-3). For each of visualization, <em>r_rating</em> column was first filtered and the rest of the steps were then carried out:</p>
+<p>The data frame was converted into a corpus for preprocessing.A corpus is a collection of documents. For pre-processing of text, <em>tm_map</em> function was used to convert texts to lower cases, removing punctuations and stopwords, eliminating extra white spaces and stemming which reduces the words to their root form.</p>
+<p>Then the texts are extracted by word frequencies to be used as tags for building the word cloud. And finally <em>wordcloud2</em> package was used to generate the final visualization.</p>
+<h1 id="data-visualization-dashboard">Data Visualization Dashboard</h1>
+<p>The final interactive data visualization is shown below, it is also available at <a href="https://public.tableau.com/app/profile/xiaoqi.min/viz/nikeviz_16495108978330/Dashboard1">Tableau Public</a></p>
+<p><img src="img/finalviz.png" /></p>
+<h1 id="product-distribution">1.0 Product Distribution</h1>
+<center>
+<img src="img/Picture1.png" />
+</center>
+<p>For all the products offered in Nike’s website, there are more products for men (66.36%) as compared to women (34.64%)</p>
+<center>
+<img src="img/productmen.png" />
+</center>
+<center>
+<img src="img/productwomen.png" />
+</center>
+<p>By examine the percentage of products by category, we can see that running shoe, Nike Air Max, Air Force, basketball shoe and Training shoe are the common categories that accounts for high proportion of products offered for both men and women. These includes signature collections of Nike such as Air Force, and sports specific shoes such as running and basketball shoes.</p>
+<p>For products offered to men, Jordan and Nike Air collections are the outstanding categories that holds a large proportion of total products. We can see that for men’s products, the categories are more catered towards non-functioning shoes which are not for a specific sport. Series such as Air Max, Air Force, Jordan, and Nike-Converse are offer products that are mostly stylish and aesthetically appealing. There are wide varieties of designs and products for each of these categories to attract consumers.</p>
+<p>As compared to men, products offered to women are more functioning shoes. From the treemap, we can see that the bulk of the products are for running, training and basketball.</p>
+<p>These could potentially due to the nature of gender and the choices of apparel. Women have more choices of shoes other than sports shoes, such as flats, heels, boots, sandals, pumps and so on. For males, they generally prefer comfort and stylish shoes to be daily choices of outfit. Hence, men could demand more from Nike’s products other than it being a sports shoe brand.</p>
+<p><img src="img/topten.png" /> From the top 10 product categories by number of reviews, we can see that these are the classic collections and products offered by Nike. Among all, Air Max tops the number of reviews. Under Air Max, VaporMax Flyknit 3, VaporMax Plus and Air Max 97 received the most number of customer reviews.</p>
+<p>Other popular products are Nike Revolution 5, Air Force 1 ’07, Nike Air Monarch IV, Nike Benassi JDI, Jordan 6 Rings, Nike Air Huarache, Converse Chuck Taylor All Star Low Top, Nike Roshe One, and Nike Free TR8.</p>
+<p>The high number of reviews is a two sided sward, it can mean the product is popular or there needs to be improvements. We will proceed to look at the quaterly average ratings of these top product categories.</p>
+<h1 id="average-product-ratings">2.0 Average Product Ratings</h1>
+<p><img src="img/quaterlyrating.png" /> Products such as VaporMax Flyknit 3, VaporMax Plus, Jordan 6 Rings, and Nike Free TR8 had a overall good rating trend since their launch, with average ratings above 4.4. Below are some of the notable products:</p>
+<ul>
+<li><p>Air Max 97 falls below rating 4 in Q2 2018</p></li>
+<li><p>Revolution 5 has kept its ratings above 4 but the performance in recent quarters are decreasing.</p></li>
+<li><p>After 2 troughs in 2016 and 2017 respectively, the performance of Nike Air Monarch IV stabilized at high ratings of above 4.5 in recent quarters. Similar to it, Nike Air Huarache experienced the same trend. after unstable average ratings and a trough at 4.0 on 2017, it stabilized performance at high ratings of above 4.6 afterwards.</p></li>
+<li><p>The average ratings of Nike Benassi JDI seems to be unstable from its launch, ranging from as low as 3.8 to as high as 5.0. This implies different customer demand may not be met.</p></li>
+<li><p>Converse Chuck Taylor All Star Low Top started with very low average ratings such as 1.0 and 3.3. However, there were improvements in its performance starting from 2018 Q1 and it kept the good average ratings of 4.4 and above till today.</p></li>
+<li><p>Nike Roshe One launched with a good rating but experienced a trough at 2017, then recovered and stabilized the performance from 2017 Q4 onwards.</p></li>
+</ul>
+<h1 id="price-distribution">3.0 Price Distribution</h1>
+<p><img src="img/price.png" /></p>
+<p>From the price distribution of the top product categories, we can see that for most of the categories, the median price between men and women are almost the same, except for Running shoe which the median price deviation is around 50%. Men’s running shoe median price is approximately double of women’s.</p>
+<p>For products that are for a particular sport or activity, such as running shoe, training shoe, slide, and Gym/HIIT/Cross Training Shoe, the prices are interestingly lower, raning around 100 dollars or below. However, the prices of Air Max, Air Force, Jordan which are more of aesthetic and stylish shoes has significantly higher prices than functioning shoes. Air Max’s maximum price could reach as high as 400 dollars.</p>
+<h1 id="correlation-matrix">4.0 Correlation Matrix</h1>
+<center>
+<img src="img/correlation.png" />
+</center>
+<p>This chart shows the correlation between the measurable data fields. The numbers represent the strength of the correlation between two variables. As we can see from the chart, number of reviews has high positive correlation with score. This implies that the number of reviews have a direct positive impact on the scoring of the product or vice versa. Hence, it is an important marketing area to strategize as customers nowadays turn to online reviews before they purchase a product for reassurance and decision making. Ensuring positive reviews and ratings will value add to marketing and revenue as it increases consumer trust and customer experience. The number of reviews matters too, as pointed out by a study from <a href="https://www.axios.com/with-amazon-reviews-quantity-draws-more-buyers-than-quality-1513305106-d25e321f-26b3-4406-a28b-fc24a57e2c12.html">Stanford University</a> that people prefer products with more reviews than the competitors, despite the competitors gained a higher average score.</p>
+<p>The 3 user inputs on their experiences on size, durabilit and comfort reveals that comfort and durability have high positive impact on the scoring of the product. They value comfortability and the lastingness of shoes which the product development team could take note of.</p>
+<h1 id="text-analysis">5.0 Text Analysis</h1>
+<p>Text mining of the reviews will help us gain a direct understanding of the key words from customer experiences and demand. Thus, helping us to improve marketing strategy and product development.</p>
+<center>
+<img src="img/wordcloudgood.png" />
+</center>
+<p>From the key words given by positive reviews (review ratings between 4-5), we can see that majority of customers were happy with their products received, leaving positive words such as love, good, and nice.</p>
+<p>From the word cloud, we can also gather information about what customers like about the products. Key words such as size, fit, look, wear, style implies that customers place heavy emphasize on the shoe’s comfortability and aesthetics.</p>
+<p>Another interesting finding are the words “son” and “gift”. They are the frequent words just after customer experience, which indicates a potential marketing strategy. We can imply that there is a bulk of customers buying shoe products for their beloved ones. Hence, one strategy is to look into how to improve customers’ experience when they received a product as a gift. Areas such as packaging, delivery options, customization could be potential value add.</p>
+<center>
+<img src="img/wordcloudbad.png" />
+</center>
+<p>From the key words given by negative reviews (review ratings between 1-3), we can see that comfortability is again the most valued aspect of customer experience. Size and fitting are areas of improvement that product development team can reflect on. Market research on how and why certain products will have these fitting problems should be carried out as a issue to tackle. Moreover, specific part of the shoe, such as toe, heel, sole and lace are the top words that appear in the negative review. This implies that more work should be done on improving wearing experience, this could be from product designing, usage of materials and possible adoption of new technologies perspectives.</p>
+<h1 id="conclusion">Conclusion</h1>
+<p>From this analysis project, several insights were gained regarding the products offered by gender, what are the popular product categories, how they performed over the years and their price distributions. Also, the reviews from customers had given us insights on what criteria do they demand for a product to be qualified as a good product.</p>
+<p>Online reviews are direct reflection of customer satisfaction and they can be useful when making marketing and product development decisions. For future work, industry-level information could be included to compare Nike’s performance with the industry standard. Moreover, analyzing other market competitors will be useful to gain objective understanding of Nike’s strentgh and weaknesses.</p>
 <div class="sourceCode" id="cb1"><pre class="sourceCode r distill-force-highlighting-css"><code class="sourceCode r"></code></pre></div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
