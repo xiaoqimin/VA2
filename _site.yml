@@ -22,6 +22,8 @@ navbar:
           href: "inclassex/in-class-ex-03/in_class_Ex_03.html"
         - text: "Statistical Plots"
           href: "inclassex/in-class-ex-04/in_class_Ex_04.html"
+        - text: "Correlation Matrix"
+          href: "inclassex/in-class-ex-05/in-class-ex-05.html"
     - text: "Tableau DataViz Makeover"
       menu:
         - text: "Singapore’s Labor Force Participation Rate"
