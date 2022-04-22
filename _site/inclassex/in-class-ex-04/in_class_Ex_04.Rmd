@@ -1,0 +1,294 @@
+---
+title: "VisualAnalytics with R"
+description: |
+  Creating data visualisation beyond default.
+author:
+  - name: Min Xiaoqi 
+    url: https://www.linkedin.com/in/xiaoqi-min/
+    affiliation: Master of IT in Business, Singapore Management University
+    affiliation_url: https://scis.smu.edu.sg/master-it-business/financial-technology-and-analytics-track
+date: "`r Sys.Date()`"
+output: distill::distill_article
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Getting started
+In this exercise, **infer**, **ggstatsplot** and **tidyverse** will be used.
+
+```{r}
+packages = c('ggstatsplot', 'ggside', 
+             'tidyverse', 'ggdist')
+for (p in packages){
+  if(!require(p, character.only = T)){
+    install.packages(p)
+  }
+}
+```
+
+In this exercise, the Exam.csv data will be used.
+
+```{r}
+exam <- read_csv("data/Exam_data.csv")
+```
+
+# Visual Statistical Analysis with ggstatsplot
+
+* [ggstatsplot](https://indrajeetpatil.github.io/ggstatsplot/index.html) is an extension of [ggplot2](https://ggplot2.tidyverse.org/) package for creating graphics with details from statistical tests included in the information-rich plots themselves.
+  + To provide alternative statistical inference methods by default.
+  + To follow best practices for statistical reporting. For all statistical tests reported in the plots, the default template abides by the APA gold standard for statistical reporting. 
+  
+## One-sample test: gghistostats() method 
+
+In the code chunk below, gghistostats() is used to build a visual of one-sample test on English scores. 
+
+```{r}
+set.seed(1234)
+
+gghistostats(
+  data = exam,
+  x = ENGLISH, 
+  test.value = 60, 
+  xlab = "English scores"
+)
+```
+Default information:
+* statistical details
+* Bayes Factor
+* sample sizes
+* distribution summary 
+
+Changing the *type of statistical approach/test*: paramatric(p), nonparamatric (np), robust(r), and bayes(b). Paramatric is default. *test.value* to indicate the true value of the mean. 
+
+```{r}
+set.seed(1234)
+
+gghistostats(
+  data = exam,
+  x = ENGLISH, 
+  type = "np",
+  test.value = 60, 
+  xlab = "English scores"
+)
+```
+
+## Unpacking the Bayes Factor 
+
+* A Bayes factor is the ratio of the likelihood of one particular hypothesis to the likelihood of another. It can be interpreted as a measure of the strength of evidence in favor of one theory among two competing theories.
+
+* That’s because the Bayes factor gives us a way to evaluate the data in favor of a null hypothesis, and to use external information to do so. It tells us what the weight of the evidence is in favor of a given hypothesis.
+
+* When we are comparing two hypotheses, H1 (the alternate hypothesis) and H0 (the null hypothesis), the Bayes Factor is often written as B10. It can be defined mathematically as ![](C:/xiaoqimin/VA/In-Class-Ex/in-class-ex-04/Picture1.png)
+
+* The **Schwarz criterion** is one of the easiest ways to calculate rough approximation of the Bayes Factor.
+
+### How to interpret Bayes Factor
+
+A **Bayes Factor** can be any positive number. One of the most common interpretations is this one—first proposed by Harold Jeffereys (1961) and slightly modified by Lee and Wagenmakers in 2013:
+![](C:/xiaoqimin/VA/In-Class-Ex/in-class-ex-04/Picture2.png)
+
+## Two-sample mean test: ggbetweenstats()
+In the code chunk below, *ggbetweenstats()* is used to build a visual for two-sample mean test of Maths scores by gender.
+
+```{r}
+ggbetweenstats(
+  data = exam,
+  x = GENDER,
+  y = MATHS,
+  messages = FALSE
+)
+```
+
+## Oneway ANOVA Test: ggbetweenstats() 
+
+In the code chunk below, ggbetweenstats() is used to build a visual for One-way ANOVA test on English score by race. To test more than 2 means. 
+
+```{r}
+ggbetweenstats(
+  data = exam, 
+  x = RACE, 
+  y = ENGLISH,
+  type = "p",
+  mean.ci = TRUE,
+  pariwise.comparisons = TRUE,
+  pairwise.display = "s",
+  p.adjust.method = "fdr",
+  messages = FALSE
+)
+```
+
+* "ns": only show the pair that is only non-significant
+* "s": only show the pair that is only significant
+* "all": show all the pairs
+* default significance level is 95% 
+From this graph, it shows that only Chinese and Malay are significant 
+
+## Significant Test of Correlation: ggscatterstats()
+
+In the code chunk below, *ggscatterstats()* is used to build a visual for Significant Test of Correlation between Maths scores and English scores. Both variables need to be **continuous**. 
+
+```{r}
+ggscatterstats(
+  data = exam,
+  x = MATHS,
+  y = ENGLISH, 
+  marginal = FALSE
+)
+```
+
+## Significant Test of Association (Depedence) : ggbarstats() methods
+In the code chunk below, the Maths scores is binned into a 4-class variable by using *[cut()](https://www.rdocumentation.org/packages/base/versions/3.6.2/topics/cut)*, for discrete variables
+
+```{r}
+exam1 <- exam %>%
+  mutate(MATHS_bins = 
+           cut(MATHS,
+               breaks = c(0,60,75,85,100))
+        )
+```
+
+In this code chunk below *[ggbarstats()](https://indrajeetpatil.github.io/ggstatsplot/reference/ggbarstats.html)* is used to build a visual for Significant Test of Association
+
+```{r}
+ggbarstats(exam1,
+           x = MATHS_bins,
+           y = GENDER)
+```
+
+# Toyota Corolla case study 
+
+Build a model to discover factors affecting prices of used-cars by taking into consideration a set of explanatory variables.
+
+## Installing and loading the required libraries 
+
+```{r}
+packages = c('readxl', 'report', 'performance', 'parameters', 'see')
+for(p in packages){
+  if(!require(p, character.only = T)){
+    install.packages(p)
+  }
+  library(p, character.only = T)
+}
+```
+
+## Importing Excel file: readxl methods
+
+In the code chunk below, *read_xls()* of readxl package is used to import the data worksheet of ToyotaCorolla.xls workbook into R.
+
+```{r}
+car_resale <- read_xls("data/ToyotaCorolla.xls", "data")
+```
+
+Notice that the output object car_resale is a tibble data frame.
+
+### Multiple Regression Model using lm()
+
+The code chunk below is used to calibrate a multiple linear regression model by using *lm()* of Base Stats of R.
+
+```{r}
+model <- lm(Price ~ Age_08_04 + Mfg_Year +KM +
+              Weight + Guarantee_Period, data = car_resale)
+model 
+```
+
+### Model Diagnostic: checking for multicolinearity
+
+In the code chunk, *check_collinearity()* of **performance** package.
+
+```{r}
+check_collinearity(model)
+
+check_c <- check_collinearity(model)
+plot(check_c)
+```
+
+* no sign of multicollinearity --> green(<5) 
+* sign of high multicollinearity --> red(>=10)
+
+### Model Diagnostic: checking normality assumption
+
+In the code chunk, *check_normality()* of **performance** package.
+
+```{r}
+check_n <- check_normality(model)
+
+plot(check_n)
+```
+
+### Model Diagnostic: Check model for homogeneity of variances
+
+In the code chunk, *check_heteroscedasticity()* of **performance** package.
+
+```{r}
+check_h <- check_heteroscedasticity(model)
+
+plot(check_h)
+```
+
+### Model Diagnostic: Complete check
+
+We can also perform the complete by using *check_model()*.
+
+```{r}
+check_model(model)
+```
+
+### Visualising Regression Parameters: see methods
+
+In the code below, plot() of see package and parameters() of parameters package is used to visualise the parameters of a regression model. This is a better method as it shows both the positive and negative parts. 
+
+```{r}
+plot(parameters(model))
+```
+
+### Visualising Regression Parameters: ggcoefstats() methods
+
+In the code below, *ggcoefstats()* of ggstatsplot package to visualise the parameters of a regression model.
+
+```{r}
+ggcoefstats(model, 
+            output = "plot")
+```
+
+### Visualising uncertainty: ggdist package 
+
+* [ggdist](https://mjskay.github.io/ggdist/index.html) is an R package that provides a flexible set of ggplot2 geoms and stats designed especially for visualising distributions and uncertainty.
+
+* It is designed for both frequentist and Bayesian uncertainty visualization, taking the view that uncertainty visualization can be unified through the perspective of distribution visualization:
+  + for frequentist models, one visualises confidence distributions or bootstrap distributions (see vignette("freq-uncertainty-vis"));
+  + for Bayesian models, one visualises probability distributions (see the tidybayes package, which builds on top of ggdist).
+  
+#### visualising uncertainty between groups 
+
+In the code chunk below, [stat_eye()](https://mjskay.github.io/ggdist/articles/slabinterval.html) of ggdist is used to build a visual for displaying distribution of maths scores by race.
+
+```{r}
+exam %>%
+  ggplot(aes(x = RACE, y = MATHS)) +
+  stat_eye() +
+  ggtitle("stat_eye()")
+```
+
+stat_slab() and stat_pointinterval()
+
+```{r}
+exam %>%
+  ggplot(aes(fill = RACE, 
+             color = RACE, 
+             x = MATHS)) +
+  stat_slab(alpha = .3) +
+  stat_pointinterval(
+    position = position_dodge(
+      width = .4, 
+      preserve = "single")) +
+  labs(
+    title = "stat_slab() and stat_pointinterval()", 
+    subtitle = "with position_dodge() applied to the intervals",
+    y = NULL
+  ) +
+  scale_y_continuous(breaks = NULL)
+```
+
+
