@@ -18,6 +18,8 @@ navbar:
           href: "TH_Ex/Take_Home_Ex02/take_home_ex_2.html"
         - text: "Starbucks Kids Drinks Nutritional Facts"
           href: "TH_Ex/Take_Home_Ex03/take_home_ex_03.html"
+        - text: "Interactivity in R"
+          href: "inclassex/in-class-ex-03/in_class_Ex_03.html"
     - text: "Tableau DataViz Makeover"
       menu:
         - text: "Singapore’s Labor Force Participation Rate"
