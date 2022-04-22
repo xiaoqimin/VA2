@@ -2,7 +2,7 @@
 title: "Visual Analytics and Applications"
 site: distill::distill_website
 description: |
-  Welcome to my visual analytics journey. This hosts the write up of my DataViz Makeovers, R visual exercises, and projects.
+  Welcome to my visual analytics journey. This hosts the write up of my DataViz Makeovers, R visual exercises, and data visualization projects.
 ---
 
 ```{r setup, include=FALSE}

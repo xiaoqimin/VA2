@@ -3,7 +3,7 @@
     {
       "path": "about.html",
       "title": "About this site",
-      "description": "Welcome to my visual analytics journey. This hosts the write up of my DataViz Makeovers, R visual exercises, and projects. ",
+      "description": "Welcome to my visual analytics journey. This hosts the write up of my DataViz Makeovers, R visual exercises, and data visualization projects. ",
       "author": [],
       "contents": "\r\n\r\n\r\n\r\n",
       "last_modified": "2022-04-10T22:39:11+08:00"
@@ -11,10 +11,10 @@
     {
       "path": "index.html",
       "title": "Visual Analytics and Applications",
-      "description": "Welcome to my visual analytics journey. This hosts the write up of my DataViz Makeovers, R visual exercises, and projects.",
+      "description": "Welcome to my visual analytics journey. This hosts the write up of my DataViz Makeovers, R visual exercises, and data visualization projects.",
       "author": [],
       "contents": "\r\n\r\n\r\n\r\n",
-      "last_modified": "2022-04-10T22:39:14+08:00"
+      "last_modified": "2022-04-22T09:57:54+08:00"
     }
   ],
   "collections": []

@@ -10,24 +10,24 @@ navbar:
     - text: "About"
       href: about.html
   left:
-    - text: "Assignments"
+    - text: "Visualization with R"
       menu:
-        - text: "Take-home Exercise 1"
+        - text: "Singapore Demographic Structure"
           href: "TH_Ex/Take_Home_Ex01/Take_Home_Ex01.html"
-        - text: "Take-home Exercise 2"
+        - text: "Interactive Age-Sex Pyramid"
           href: "TH_Ex/Take_Home_Ex02/take_home_ex_2.html"
-        - text: "Take-home Exercise 3"
+        - text: "Starbucks Kids Drinks Nutritional Facts"
           href: "TH_Ex/Take_Home_Ex03/take_home_ex_03.html"
-    - text: "DataViz Makeover"
+    - text: "Tableau DataViz Makeover"
       menu:
-        - text: "DataViz1"
+        - text: "Singapore’s Labor Force Participation Rate"
           href: "DataViz/DataViz1/dataviz_makeover_1.html"
-        - text: "DataViz2"
+        - text: "Singapore Public Bus Flows"
           href: "DataViz/DataViz2/dataviz2.html"
     
     - text: "Project"
       menu:
-        - text: "SPExploreR"
+        - text: "SGExploreR"
           href: "SPExploreR/SGExploreR.html"
         - text: "Nike Product Review"
           href: "nike/nike.html"
