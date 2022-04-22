@@ -1,0 +1,174 @@
+---
+title: "Visualising and Analysing Time-oriented Data with R"
+description:
+ Putting Visual Analytics into Practical Use
+author:
+  - name: Min Xiaoqi 
+    url: https://www.linkedin.com/in/xiaoqi-min/
+    affiliation: Master of IT in Business, Singapore Management University
+    affiliation_url: https://scis.smu.edu.sg/master-it-business/financial-technology-and-analytics-track
+date: "`r Sys.Date()`"
+output: distill::distill_article
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Getting started 
+
+We will install and launch the following R packages:
+
+```{r}
+packages =c('scales','viridis','lubridate','ggthemes','gridExtra','tidyverse','readxl','knitr','data.table','dplyr')
+for(p in packages){library
+  if(!require(p, character.only = T)){
+    install.packages(p)
+  }
+  library(p, character.only = T)
+}
+```
+
+# Calendar Heatmap
+
+## Import data 
+
+```{r}
+attacks <- read_csv("data/eventlog.csv")
+```
+
+## Examining the data structure 
+
+*kable()* can be used to review the structure of the imported data frame
+
+```{r}
+kable(head(attacks))
+```
+
+
+## Deriving the day of the week and hour of the day variables 
+
+A quick exploratory data analysis on this attacker data is what were the "working hours" by country, and we can visualize this with a calendar heatmap. To create the heatmap, we'll need the weekday and hour of each event, or as granular as you want to get.
+
+The function below converts each time with the appropriate timezone, the timezone parameter, tz, only takes a single value, then extract its weekdays and hour
+
+```{r}
+make_hr_wkday <- function(ts, sc, tz) {
+  real_times <- ymd_hms(ts, 
+                        tz = tz[1], 
+                        quiet = TRUE)
+  dt <- data.table(source_country = sc,
+                   wkday = weekdays(real_times),
+                   hour = hour(real_times))
+  return(dt)
+}
+```
+
+## Converting weekday and hour into factor so they'll be ordered when plotting
+
+```{r}
+wkday_levels <- c('Sunday', 'Monday', 
+                  'Tuesday', 'Wednesday', 
+                  'Thursday', 'Friday', 
+                  'Saturday')
+attacks <- attacks %>%
+  group_by(tz) %>%
+  do(make_hr_wkday(.$timestamp, 
+                   .$source_country, 
+                   .$tz ) ) %>% 
+  ungroup() %>% 
+  mutate(wkday = factor(wkday, 
+                        levels = wkday_levels),
+         hour  = factor(hour, 
+                        levels = 0:23))
+```
+
+## The calendar heatmaps 
+```{r}
+grouped <- attacks %>% 
+  count(wkday, hour) %>% 
+  ungroup()
+ggplot(grouped, 
+       aes(hour, 
+           wkday, 
+           fill = n)) + 
+geom_tile(color = "white", 
+          size = 0.1) + 
+theme_tufte(base_family = "Helvetica") + 
+coord_equal() + 
+scale_fill_viridis(name = "# of Events", 
+                   label = comma) + 
+labs(x = NULL, 
+     y = NULL, 
+     title = "Events per day of week & time of day") +
+theme(axis.ticks = element_blank(),
+      plot.title = element_text(hjust = 0.5),
+      legend.title = element_text(size = 8),
+      legend.text = element_text(size = 6) )
+
+```
+
+
+# Cycle Plot 
+
+## Data import
+
+The code chunk below imports arrivals_by_air.xlsx by using *read_excel()* of **readxl** packag and save it as a tibble data frame called air.
+
+```{r}
+air <- read_excel("data/arrivals_by_air.xlsx")
+```
+
+## Deriving month and year fields
+
+Next, two new fields called month and year are derived from Month-Year field.
+
+```{r}
+air$month <- factor(month(air$`Month-Year`), 
+                    levels=1:12, 
+                    labels=month.abb, 
+                    ordered=TRUE) 
+air$year <- year(ymd(air$`Month-Year`))
+```
+
+## Extracting the target country
+
+```{r}
+New_Zealand <- air %>% 
+  select(`New Zealand`, 
+         month, 
+         year) %>%
+  filter(year >= 2010)
+```
+
+## Computing year average arrivals by month 
+
+The code chunk below uses *group-by()* and *summarise()* of **dplyr** to compute year average arrivals by month.
+
+```{r}
+hline.data <- New_Zealand %>% 
+  group_by(month) %>%
+  summarise(avgvalue = mean(`New Zealand`)) %>%
+  ungroup()
+```
+
+## Plotting the cycle plot 
+
+```{r}
+ggplot() + 
+  geom_line(data=New_Zealand,
+            aes(x=year, 
+                y=`New Zealand`, 
+                group=month), 
+            colour="black") +
+  geom_hline(aes(yintercept=avgvalue), 
+             data=hline.data, 
+             linetype=6, 
+             colour="red", 
+             size=0.5) + 
+  facet_grid(~month) +
+  labs(axis.text.x = element_blank()) +
+  xlab("") +
+  ylab("No. of Visitors")
+```
+

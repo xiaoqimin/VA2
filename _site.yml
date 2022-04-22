@@ -26,6 +26,8 @@ navbar:
           href: "inclassex/in-class-ex-05/in-class-ex-05.html"
         - text: "Heatmaps"
           href: "inclassex/in-class-ex-0502/in-class-ex-05-02.html"
+        - text: "Time-oriented Data"
+          href: "inclassex/in-class-ex-06/in-class-ex-06.html"
     - text: "Tableau DataViz Makeover"
       menu:
         - text: "Singapore’s Labor Force Participation Rate"
